@@ -31,6 +31,20 @@
     --text2: #a0a0c0;
   }
 
+  /* Player color palette */
+  :root {
+    --pc0: #e8ff3b; --pc0t: #0a0a0f;
+    --pc1: #ff3b5c; --pc1t: #fff;
+    --pc2: #3bffd4; --pc2t: #0a0a0f;
+    --pc3: #ff9f3b; --pc3t: #0a0a0f;
+    --pc4: #a78bfa; --pc4t: #0a0a0f;
+    --pc5: #3bb5ff; --pc5t: #0a0a0f;
+    --pc6: #ff6bdb; --pc6t: #0a0a0f;
+    --pc7: #3bff6b; --pc7t: #0a0a0f;
+    --pc8: #ffd93b; --pc8t: #0a0a0f;
+    --pc9: #ff7b3b; --pc9t: #0a0a0f;
+  }
+
   html { height: 100%; }
 
   body {
@@ -68,7 +82,6 @@
     to   { opacity: 1; transform: translateY(0); }
   }
 
-  /* ── SCROLLABLE screens ── */
   .screen.scrollable { overflow-y: auto; justify-content: flex-start; padding-top: 32px; }
 
   /* ── LOGO ── */
@@ -137,21 +150,6 @@
     box-shadow: 0 0 24px rgba(255,59,92,0.2);
   }
   .btn-danger:hover { box-shadow: 0 0 36px rgba(255,59,92,0.3); }
-  .btn-icon {
-    background: var(--card);
-    border: 1px solid var(--border);
-    color: var(--text2);
-    width: 42px; height: 42px;
-    border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 18px;
-    cursor: pointer;
-    padding: 0;
-    min-width: 0;
-    transition: border-color 0.15s, color 0.15s, transform 0.1s;
-  }
-  .btn-icon:active { transform: scale(0.92); }
-  .btn-icon:hover { border-color: var(--accent); color: var(--accent); }
   .btn-sm {
     padding: 10px 20px;
     font-size: 13px;
@@ -267,21 +265,38 @@
     border: 1px solid var(--border);
     border-radius: 6px;
     padding: 11px 14px;
-    transition: border-color 0.15s;
+    transition: border-color 0.25s, box-shadow 0.25s;
     position: relative;
   }
   .player-row:focus-within { border-color: var(--border2); }
+  .player-row.has-name {
+    border-color: var(--player-color, var(--border2));
+    box-shadow: 0 0 12px var(--player-glow, transparent);
+  }
   .player-avatar {
-    width: 28px; height: 28px;
+    width: 32px; height: 32px;
     border-radius: 50%;
     background: var(--muted2);
     display: flex; align-items: center; justify-content: center;
     font-size: 12px;
-    font-weight: 600;
+    font-weight: 700;
     color: var(--bg);
     flex-shrink: 0;
     text-transform: uppercase;
     letter-spacing: 0;
+    transition: background 0.25s, transform 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+  .player-avatar.has-color {
+    transform: scale(1.08);
+  }
+  .player-avatar.has-color::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, rgba(255,255,255,0.25), transparent 60%);
   }
   .player-input {
     flex: 1;
@@ -290,28 +305,31 @@
     outline: none;
     font-family: 'DM Sans', sans-serif;
     font-size: 15px;
+    font-weight: 500;
     color: var(--text);
     caret-color: var(--accent);
     min-width: 0;
+    transition: color 0.2s;
   }
-  .player-input::placeholder { color: var(--muted2); font-style: italic; }
+  .player-input.has-color { color: var(--player-color, var(--text)); }
+  .player-input::placeholder { color: var(--muted2); font-style: italic; font-weight: 300; }
   .player-delete {
-    width: 24px; height: 24px;
+    width: 26px; height: 26px;
     border-radius: 50%;
-    border: none;
+    border: 1px solid transparent;
     background: transparent;
     color: var(--muted);
-    font-size: 16px;
+    font-size: 18px;
     cursor: pointer;
     display: flex; align-items: center; justify-content: center;
-    opacity: 0.5;
-    transition: opacity 0.15s, color 0.15s;
+    opacity: 0.4;
+    transition: opacity 0.15s, color 0.15s, border-color 0.15s, transform 0.1s;
     flex-shrink: 0;
     padding: 0;
+    line-height: 1;
   }
-  .player-delete:hover { opacity: 1; color: var(--red); }
-  .player-row.saved-player { border-color: var(--border2); }
-  .player-row.saved-player .player-avatar { background: var(--accent); }
+  .player-delete:hover { opacity: 1; color: var(--red); border-color: var(--red); }
+  .player-delete:active { transform: scale(0.88); }
 
   .add-player-btn {
     width: 100%;
@@ -329,7 +347,7 @@
   }
   .add-player-btn:hover { border-color: var(--accent); color: var(--accent); }
 
-  /* saved players suggestions */
+  /* suggestions */
   .suggestions-panel {
     background: var(--card2);
     border: 1px solid var(--border);
@@ -360,10 +378,11 @@
     font-size: 13px;
     color: var(--text2);
     cursor: pointer;
-    transition: border-color 0.15s, color 0.15s, background 0.15s;
+    transition: border-color 0.15s, color 0.15s, background 0.15s, transform 0.1s;
     display: flex; align-items: center; gap: 6px;
   }
-  .chip:hover { border-color: var(--accent); color: var(--accent); }
+  .chip:hover { border-color: var(--accent); color: var(--accent); transform: scale(1.04); }
+  .chip:active { transform: scale(0.96); }
   .chip.in-game { opacity: 0.35; pointer-events: none; }
   .chip-dot {
     width: 6px; height: 6px;
@@ -420,7 +439,6 @@
     font-style: italic;
   }
 
-  /* progress dots */
   .progress-bar {
     display: flex;
     gap: 6px;
@@ -465,10 +483,7 @@
   }
   .vote-row:active { background: var(--card2); }
   .vote-row.selected { border-color: var(--red); background: rgba(255,59,92,0.05); }
-  .vote-row.eliminated {
-    opacity: 0.25;
-    pointer-events: none;
-  }
+  .vote-row.eliminated { opacity: 0.25; pointer-events: none; }
   .vote-info { display: flex; align-items: center; gap: 12px; }
   .vote-avatar {
     width: 32px; height: 32px;
@@ -476,7 +491,7 @@
     background: var(--muted2);
     display: flex; align-items: center; justify-content: center;
     font-size: 13px;
-    font-weight: 600;
+    font-weight: 700;
     color: var(--bg);
     text-transform: uppercase;
     flex-shrink: 0;
@@ -509,7 +524,6 @@
     line-height: 1.6;
   }
 
-  /* Mr White guess */
   .mrwhite-section {
     width: 100%;
     max-width: 340px;
@@ -584,7 +598,7 @@
     background: var(--muted2);
     display: flex; align-items: center; justify-content: center;
     font-size: 11px;
-    font-weight: 600;
+    font-weight: 700;
     color: var(--bg);
     text-transform: uppercase;
     flex-shrink: 0;
@@ -638,15 +652,6 @@
   }
   .db-delete:hover { opacity: 1; color: var(--red); }
 
-  /* ── TAP HINT ── */
-  .tap-hint {
-    font-size: 11px;
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    color: var(--muted);
-    margin-top: 16px;
-  }
-
   /* ── DIVIDER ── */
   .divider { width: 32px; height: 1px; background: var(--border2); margin: 4px 0 20px; align-self: flex-start; }
 
@@ -666,17 +671,25 @@
     opacity: 0;
     transition: opacity 0.2s, transform 0.2s;
     white-space: nowrap;
+    pointer-events: none;
   }
   .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
-  /* vote disabled */
   .btn:disabled { opacity: 0.35; cursor: not-allowed; }
   .btn:disabled:active { transform: none; }
 
-  /* scrollbar */
   ::-webkit-scrollbar { width: 4px; }
   ::-webkit-scrollbar-track { background: transparent; }
   ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+
+  /* tap hint */
+  .tap-hint {
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-top: 16px;
+  }
 </style>
 </head>
 <body>
@@ -685,9 +698,9 @@
 <div class="screen center active" id="s-home">
   <div class="logo">UNDER<br>COVER</div>
   <div class="logo-sub">Le jeu de l'infiltré</div>
-  <button class="btn btn-primary" onclick="goto('s-config')">Nouvelle partie</button>
-  <button class="btn btn-ghost" onclick="goto('s-players-db')">Joueurs enregistrés</button>
-  <button class="btn btn-ghost" onclick="goto('s-rules')">Règles du jeu</button>
+  <button class="btn btn-primary" onclick="showScreen('s-config')">Nouvelle partie</button>
+  <button class="btn btn-ghost" onclick="showScreen('s-players-db')">Joueurs enregistrés</button>
+  <button class="btn btn-ghost" onclick="showScreen('s-rules')">Règles du jeu</button>
 </div>
 
 <!-- ── RULES ── -->
@@ -698,20 +711,18 @@
     <p>À tour de rôle, chaque joueur donne <strong>un seul indice</strong> sur son mot. Pas trop précis, pas trop vague. Puis tout le monde vote pour éliminer le suspect le plus louche.</p>
     <p>Si <strong style="color:#ccc">Mr. White</strong> est éliminé, il a une chance de deviner le mot des citoyens pour renverser la partie.</p>
     <p><strong>Victoire Citoyens :</strong> Tous les infiltrés sont éliminés.<br>
-    <strong>Victoire Infiltrés :</strong> Ils sont en minorité non détectée (autant ou plus que les citoyens).<br>
+    <strong>Victoire Infiltrés :</strong> Ils sont en minorité non détectée.<br>
     <strong>Victoire Mr. White :</strong> Il est éliminé mais devine le mot.</p>
   </div>
-  <button class="btn btn-primary" onclick="goto('s-home')">← Retour</button>
+  <button class="btn btn-primary" onclick="showScreen('s-home')">← Retour</button>
 </div>
 
 <!-- ── PLAYERS DB ── -->
 <div class="screen scrollable" id="s-players-db">
   <div class="section-title">JOUEURS</div>
   <div class="section-sub">Tous les joueurs enregistrés</div>
-  <div style="width:100%;max-width:340px;background:var(--card);border:1px solid var(--border);border-radius:8px;overflow:hidden;margin-bottom:24px;" id="db-list">
-    <div style="padding:24px;text-align:center;color:var(--muted);font-size:13px;font-style:italic;">Aucun joueur enregistré</div>
-  </div>
-  <button class="btn btn-ghost" onclick="goto('s-home')">← Retour</button>
+  <div style="width:100%;max-width:340px;background:var(--card);border:1px solid var(--border);border-radius:8px;overflow:hidden;margin-bottom:24px;" id="db-list"></div>
+  <button class="btn btn-ghost" onclick="showScreen('s-home')">← Retour</button>
 </div>
 
 <!-- ── CONFIG ── -->
@@ -754,8 +765,8 @@
     </button>
   </div>
 
-  <button class="btn btn-primary" onclick="startGame()" id="start-btn">Lancer la partie</button>
-  <button class="btn btn-ghost" onclick="goto('s-home')">← Retour</button>
+  <button class="btn btn-primary" onclick="startGame()">Lancer la partie</button>
+  <button class="btn btn-ghost" onclick="showScreen('s-home')">← Retour</button>
   <div style="height:20px;"></div>
 </div>
 
@@ -810,23 +821,40 @@
   <div class="result-sub" id="end-sub">—</div>
   <div class="result-roles" id="end-roles"></div>
   <button class="btn btn-primary" onclick="replayGame()">Rejouer</button>
-  <button class="btn btn-ghost" onclick="goto('s-home')">← Menu</button>
+  <button class="btn btn-ghost" onclick="showScreen('s-home')">← Menu</button>
   <div style="height:24px;"></div>
 </div>
 
 <div class="toast" id="toast"></div>
 
 <script>
-// ══════════════════════════════════════════════
-// WORD PAIRS DATABASE — 500+ pairs
-// ══════════════════════════════════════════════
+// ══════════════════════════════════════════════════
+// PLAYER COLOR PALETTE
+// ══════════════════════════════════════════════════
+const PLAYER_COLORS = [
+  { color: '#e8ff3b', text: '#0a0a0f', glow: 'rgba(232,255,59,0.18)' },
+  { color: '#ff3b5c', text: '#fff',    glow: 'rgba(255,59,92,0.18)' },
+  { color: '#3bffd4', text: '#0a0a0f', glow: 'rgba(59,255,212,0.18)' },
+  { color: '#ff9f3b', text: '#0a0a0f', glow: 'rgba(255,159,59,0.18)' },
+  { color: '#a78bfa', text: '#0a0a0f', glow: 'rgba(167,139,250,0.18)' },
+  { color: '#3bb5ff', text: '#0a0a0f', glow: 'rgba(59,181,255,0.18)' },
+  { color: '#ff6bdb', text: '#0a0a0f', glow: 'rgba(255,107,219,0.18)' },
+  { color: '#3bff6b', text: '#0a0a0f', glow: 'rgba(59,255,107,0.18)' },
+  { color: '#ffd93b', text: '#0a0a0f', glow: 'rgba(255,217,59,0.18)' },
+  { color: '#ff7b3b', text: '#0a0a0f', glow: 'rgba(255,123,59,0.18)' },
+];
+
+function getPlayerColor(index) {
+  return PLAYER_COLORS[index % PLAYER_COLORS.length];
+}
+
+// ══════════════════════════════════════════════════
+// WORD PAIRS DATABASE
+// ══════════════════════════════════════════════════
 const PAIRS = [
-  // Animaux domestiques & proches
   ["Chat","Chien"],["Lapin","Cochon d'Inde"],["Perroquet","Perruche"],
   ["Hamster","Gerbille"],["Tortue","Lézard"],["Poisson rouge","Carpe koï"],
   ["Canari","Pinson"],["Furet","Belette"],["Chèvre","Mouton"],["Cochon","Sanglier"],
-
-  // Animaux sauvages
   ["Lion","Tigre"],["Loup","Renard"],["Ours","Panda"],["Aigle","Faucon"],
   ["Dauphin","Requin"],["Baleine","Orque"],["Crocodile","Alligator"],
   ["Gorille","Chimpanzé"],["Lynx","Guépard"],["Bison","Buffle"],
@@ -841,34 +869,26 @@ const PAIRS = [
   ["Lama","Alpaga"],["Paon","Faisan"],["Vautour","Condor"],
   ["Toucan","Perroquet"],["Raie","Requin-marteau"],["Méduse","Anémone"],
   ["Crabe","Homard"],["Crevette","Gambas"],["Anguille","Murène"],
-
-  // Nourriture — boulangerie & pâtisserie
   ["Croissant","Pain au chocolat"],["Baguette","Ficelle"],["Pain de mie","Pain brioché"],
   ["Macaron","Éclair"],["Madeleine","Financier"],["Beignet","Churro"],
   ["Tarte","Quiche"],["Crêpe","Gaufre"],["Brioche","Kouglof"],
   ["Chouquette","Profiterole"],["Millefeuille","Napoléon"],["Opéra","Forêt-noire"],
   ["Flan","Crème brûlée"],["Île flottante","Mousse au chocolat"],
   ["Tiramisu","Panna cotta"],["Tarte Tatin","Tarte aux pommes"],
-
-  // Nourriture — plats
   ["Pizza","Tarte flambée"],["Lasagne","Gratin dauphinois"],
   ["Risotto","Paella"],["Tajine","Couscous"],["Ratatouille","Caponata"],
   ["Hamburger","Hot-dog"],["Frite","Chip"],["Sushi","Maki"],
   ["Soupe","Bouillon"],["Salade","Coleslaw"],["Saucisse","Merguez"],
   ["Steak","Côtelette"],["Poulet rôti","Canard laqué"],["Côte de bœuf","Entrecôte"],
   ["Fondue","Raclette"],["Choucroute","Pot-au-feu"],["Quenelle","Boulette"],
-  ["Wrap","Burrito"],["Kebab","Shawarma"],["Banh mi","Bánh mì"],
-  ["Ramen","Pho"],["Pad thaï","Wok de nouilles"],["Gyoza","Ravioli chinois"],
+  ["Wrap","Burrito"],["Kebab","Shawarma"],["Ramen","Pho"],
+  ["Pad thaï","Wok de nouilles"],["Gyoza","Ravioli chinois"],
   ["Samosa","Nems"],["Falafel","Kefta"],["Shakshuka","Œufs au plat"],
   ["Omelette","Fritatta"],["Galette","Blini"],["Bruschetta","Tartine"],
   ["Ravioli","Tortellini"],["Gnocchi","Spätzle"],["Moussaka","Pastitsio"],
-
-  // Nourriture — fromages
   ["Brie","Camembert"],["Roquefort","Gorgonzola"],["Cheddar","Gouda"],
   ["Emmental","Gruyère"],["Comté","Beaufort"],["Mozzarella","Burrata"],
   ["Feta","Chèvre frais"],["Parmesan","Pecorino"],["Reblochon","Munster"],
-
-  // Nourriture — fruits & légumes
   ["Pomme","Poire"],["Raisin","Mirabelle"],["Cerise","Groseille"],
   ["Ananas","Mangue"],["Kiwi","Fruit de la passion"],["Pastèque","Melon"],
   ["Fraise","Framboise"],["Mûre","Myrtille"],["Abricot","Pêche"],
@@ -879,8 +899,6 @@ const PAIRS = [
   ["Asperge","Poireau"],["Betterave","Radis"],["Artichaut","Cardon"],
   ["Champignon","Truffe"],["Lentille","Pois chiche"],["Haricot","Fève"],
   ["Maïs","Blé"],["Riz","Quinoa"],["Patate douce","Pomme de terre"],
-
-  // Boissons
   ["Café","Thé"],["Latte","Cappuccino"],["Expresso","Ristretto"],
   ["Thé vert","Thé noir"],["Kombucha","Kéfir"],["Smoothie","Jus pressé"],
   ["Coca","Pepsi"],["Jus d'orange","Jus de pomme"],["Limonade","Orangeade"],
@@ -888,38 +906,23 @@ const PAIRS = [
   ["Champagne","Prosecco"],["Vodka","Gin"],["Tequila","Mezcal"],
   ["Cognac","Armagnac"],["Whisky","Rhum"],["Bière","Cidre"],
   ["Mojito","Caïpirinha"],["Cosmopolitan","Martini"],["Sangria","Punch"],
-  ["Amaretto","Baileys"],["Absinthe","Pastis"],["Calvados","Pommeau"],
-  ["Sirop de fraise","Grenadine"],["Eau gazeuse","Eau pétillante"],
-
-  // Vêtements
   ["Manteau","Pardessus"],["Veste","Blazer"],["Pull","Sweat"],
   ["Jean","Chino"],["Short","Bermuda"],["Robe","Jupe"],
   ["Baskets","Tennis"],["Mocassins","Derbies"],["Sandales","Tongs"],
   ["Casquette","Bob"],["Béret","Bonnet"],["Foulard","Écharpe"],
   ["Sac à main","Pochette"],["Ceinture","Bretelles"],["Cravate","Nœud papillon"],
-  ["Bikini","Maillot une pièce"],["Pyjama","Nuisette"],["Imperméable","Poncho"],
+  ["Pyjama","Nuisette"],["Imperméable","Poncho"],
   ["Gilet","Cardigan"],["Polo","T-shirt"],["Chemise","Blouse"],
-  ["Legging","Collant"],["Culotte","Boxer"],["Soutien-gorge","Bralette"],
-  ["Slip de bain","Short de surf"],["Tuxedo","Smoking"],["Salopette","Combinaison"],
+  ["Legging","Collant"],["Tuxedo","Smoking"],["Salopette","Combinaison"],
   ["Bottes","Bottines"],["Escarpins","Ballerines"],["Mules","Sabots"],
-  ["Lunettes de soleil","Lunettes de vue"],["Montre","Bracelet connecté"],
-  ["Bague","Alliance"],["Collier","Pendentif"],["Boucles d'oreilles","Clips"],
-
-  // Maison
   ["Canapé","Fauteuil"],["Lit","Hamac"],["Table","Bureau"],
   ["Armoire","Commode"],["Miroir","Tableau"],["Lampe","Lustre"],
   ["Lave-vaisselle","Lave-linge"],["Micro-ondes","Four"],["Réfrigérateur","Congélateur"],
   ["Aspirateur","Balai"],["Fer à repasser","Sèche-linge"],["Bouilloire","Cafetière"],
   ["Couteau","Fourchette"],["Assiette","Bol"],["Tasse","Mug"],
-  ["Savon","Gel douche"],["Brosse à dents","Fil dentaire"],["Shampooing","Après-shampooing"],
   ["Rideau","Store"],["Tapis","Moquette"],["Parquet","Carrelage"],
-  ["Baignoire","Jacuzzi"],["Douche","Hammam"],["Lavabo","Évier"],
-  ["Radiateur","Poêle"],["Climatiseur","Ventilateur"],["Cheminée","Insert"],
-  ["Balcon","Terrasse"],["Jardin","Veranda"],["Cave","Grenier"],
-  ["Interphone","Visiophone"],["Alarme","Détecteur de fumée"],
-  ["Peinture","Papier peint"],["Parquet","Linoléum"],["Brique","Parpaing"],
-
-  // Sports
+  ["Baignoire","Jacuzzi"],["Douche","Hammam"],["Radiateur","Poêle"],
+  ["Climatiseur","Ventilateur"],["Cheminée","Insert"],
   ["Tennis","Badminton"],["Natation","Water-polo"],["Judo","Karaté"],
   ["Boxe","MMA"],["Cyclisme","Triathlon"],["Marathon","Semi-marathon"],
   ["Escalade","Alpinisme"],["Surf","Kitesurf"],["Voile","Kayak"],
@@ -927,82 +930,43 @@ const PAIRS = [
   ["Basketball","Netball"],["Volleyball","Handball"],["Baseball","Cricket"],
   ["Patinage artistique","Patinage de vitesse"],["Luge","Bobsleigh"],
   ["Biathlon","Ski de fond"],["Ski","Snowboard"],["Équitation","Polo"],
-  ["Tir à l'arc","Javelot"],["Escrime","Lutte"],["Haltérophilie","Powerlifting"],
-  ["CrossFit","Calisthenics"],["Yoga","Pilates"],["Musculation","Stretching"],
-  ["Pétanque","Bocce"],["Fléchettes","Billard"],["Squash","Racquetball"],
-  ["Ping-pong","Tennis de table"],["Padel","Pickleball"],
+  ["CrossFit","Calisthenics"],["Yoga","Pilates"],["Pétanque","Bocce"],
+  ["Squash","Racquetball"],["Ping-pong","Tennis de table"],["Padel","Pickleball"],
   ["Plongée","Apnée"],["Parachutisme","Deltaplane"],["Parapente","Wingsuit"],
-
-  // Musique
   ["Rock","Métal"],["Jazz","Blues"],["Reggae","Ska"],
   ["Hip-hop","Rap"],["Électro","Techno"],["Pop","R&B"],
   ["Classique","Baroque"],["Opéra","Comédie musicale"],["Flamenco","Tango"],
   ["Violon","Alto"],["Trompette","Trombone"],["Flûte","Clarinette"],
   ["Piano","Orgue"],["Batterie","Percussions"],["Harpe","Lyre"],
-  ["DJ","Beatmaker"],["Chorale","A cappella"],["Concert","Festival"],
   ["Bossa nova","Samba"],["Salsa","Merengue"],["K-pop","J-pop"],
   ["Gospel","Soul"],["Country","Folk"],["Punk","Grunge"],
   ["Ambient","Chillout"],["Drum & bass","Dubstep"],["House","Deep house"],
-  ["Synthétiseur","Sampler"],["Guitare acoustique","Guitare électrique"],
-  ["Contrebasse","Violoncelle"],["Accordéon","Bandonéon"],["Mandoline","Banjo"],
-  ["Ukulélé","Guitare hawaïenne"],["Sitar","Oud"],["Kora","Balafon"],
-
-  // Cinéma & séries
+  ["Guitare acoustique","Guitare électrique"],["Contrebasse","Violoncelle"],
+  ["Accordéon","Bandonéon"],["Mandoline","Banjo"],["Ukulélé","Guitare hawaïenne"],
   ["Thriller","Film noir"],["Comédie romantique","Comédie dramatique"],
   ["Documentaire","Reportage"],["Dessin animé","Anime"],
   ["Science-fiction","Fantasy"],["Western","Péplum"],
   ["Film d'horreur","Film de suspense"],["Action","Aventure"],
-  ["Biopic","Film historique"],["Court-métrage","Long-métrage"],
-  ["Série policière","Série médicale"],["Sitcom","Dramédie"],
-  ["Film muet","Film en noir et blanc"],["Mockumentary","Docusérie"],
-  ["Réalisateur","Scénariste"],["Acteur principal","Second rôle"],
-  ["Avant-première","Sortie mondiale"],["Festival de Cannes","Oscars"],
-  ["Streaming","Cinéma"],["Blu-ray","DVD"],
-
-  // Tech & digital
+  ["Biopic","Film historique"],["Série policière","Série médicale"],["Sitcom","Dramédie"],
   ["Smartphone","Phablet"],["Ordinateur portable","Ultrabook"],
-  ["Imprimante","Scanner"],["Wifi","Bluetooth"],["USB","USB-C"],
   ["Instagram","TikTok"],["Twitter","Mastodon"],["Facebook","LinkedIn"],
-  ["Google","Bing"],["Netflix","Disney+"],["Spotify","Deezer"],
-  ["Bitcoin","Ethereum"],["IA","Robot"],["Drone","Satellite"],
-  ["Clavier","Souris"],["Casque VR","Lunettes AR"],
-  ["Serveur","Cloud"],["Application","Logiciel"],["Site web","Application mobile"],
-  ["Algorithme","Intelligence artificielle"],["Blockchain","Cryptomonnaie"],
-  ["Podcast","Webinaire"],["Influenceur","Créateur de contenu"],
-  ["Gaming","Esport"],["Console","PC gaming"],["Nintendo Switch","Steam Deck"],
-  ["ChatBot","Assistant vocal"],["Deepfake","Filtre AR"],
-  ["Fibre optique","4G"],["Cybersécurité","Pare-feu"],
-
-  // Nature & météo
+  ["Netflix","Disney+"],["Spotify","Deezer"],["Bitcoin","Ethereum"],
+  ["Console","PC gaming"],["Nintendo Switch","Steam Deck"],
   ["Tornade","Cyclone"],["Avalanche","Glissement de terrain"],
   ["Tsunami","Raz-de-marée"],["Sécheresse","Canicule"],
   ["Orage","Tempête"],["Brouillard","Brume"],["Givre","Verglas"],
   ["Arc-en-ciel","Aurore boréale"],["Éclipse solaire","Éclipse lunaire"],
   ["Volcan","Geyser"],["Désert","Steppe"],["Toundra","Taïga"],
-  ["Savane","Prairie"],["Récif corallien","Mangrove"],["Marécage","Tourbière"],
-  ["Falaise","Canyon"],["Fjord","Baie"],["Delta","Estuaire"],
   ["Lac","Étang"],["Rivière","Fleuve"],["Cascade","Chute d'eau"],
   ["Glacier","Banquise"],["Iceberg","Pack"],["Dune","Désert de sel"],
-  ["Grotte","Gouffre"],["Géode","Cristal"],["Galet","Silex"],
-  ["Mousse","Lichen"],["Champignon","Truffe"],["Cactus","Aloé vera"],
-  ["Chêne","Hêtre"],["Sapin","Pin"],["Bambou","Roseau"],
   ["Tulipe","Rose"],["Lavande","Menthe"],["Tournesol","Coquelicot"],
-
-  // Métiers
   ["Pompier","Ambulancier"],["Policier","Gendarme"],["Juge","Avocat"],
   ["Architecte","Urbaniste"],["Plombier","Électricien"],["Menuisier","Charpentier"],
-  ["Cuisinier","Pâtissier"],["Boulanger","Traiteur"],["Sommelier","Barista"],
-  ["Photographe","Vidéaste"],["Journaliste","Reporter"],["Écrivain","Scénariste"],
+  ["Cuisinier","Pâtissier"],["Boulanger","Traiteur"],["Photographe","Vidéaste"],
+  ["Journaliste","Reporter"],["Écrivain","Scénariste"],
   ["Dentiste","Orthodontiste"],["Kiné","Ostéopathe"],["Vétérinaire","Zoologiste"],
-  ["Comptable","Auditeur"],["Commercial","Marketeur"],["RH","Recruteur"],
   ["Pilote","Contrôleur aérien"],["Marin","Capitaine"],["Astronaute","Cosmonaute"],
-  ["Chercheur","Professeur"],["Bibliothécaire","Archiviste"],["Traducteur","Interprète"],
-  ["Acteur","Danseur"],["Musicien","Chanteur"],["Peintre","Sculpteur"],
-  ["Styliste","Couturier"],["Bijoutier","Horloger"],["Pharmacien","Biologiste"],
-  ["Chirurgien","Anesthésiste"],["Sage-femme","Infirmière"],["Diététicien","Nutritionniste"],
-  ["Géologue","Géographe"],["Météorologue","Climatologue"],["Économiste","Sociologue"],
-
-  // Lieux & voyages
+  ["Chercheur","Professeur"],["Traducteur","Interprète"],["Acteur","Danseur"],
   ["Camping","Glamping"],["Auberge de jeunesse","Hôtel capsule"],
   ["Safari","Trek"],["Croisière","Traversée"],["Road trip","Tour du monde"],
   ["Cathédrale","Basilique"],["Musée","Galerie"],["Marché","Bazar"],
@@ -1010,110 +974,53 @@ const PAIRS = [
   ["Paris","Lyon"],["Marseille","Nice"],["Tokyo","Osaka"],
   ["New York","Los Angeles"],["Londres","Édimbourg"],["Rome","Milan"],
   ["Madrid","Barcelone"],["Lisbonne","Porto"],["Amsterdam","Rotterdam"],
-  ["Vienne","Budapest"],["Prague","Varsovie"],["Dublin","Édimbourg"],
-  ["Sydney","Melbourne"],["Toronto","Vancouver"],["Dubai","Abu Dhabi"],
-  ["Bali","Java"],["Maldives","Seychelles"],["Martinique","Guadeloupe"],
-  ["Monastère","Abbaye"],["Château","Manoir"],["Palais","Villa"],
-  ["Gratte-ciel","Tour Eiffel"],["Pyramide","Sphinx"],["Colisée","Panthéon"],
-  ["Pont","Viaduc"],["Tunnel","Souterrain"],["Autoroute","Route nationale"],
-
-  // Jeux & loisirs
+  ["Vienne","Budapest"],["Prague","Varsovie"],["Sydney","Melbourne"],
   ["Échecs","Dames"],["Scrabble","Boggle"],["Monopoly","Risk"],
   ["Poker","Blackjack"],["Roulette","Machine à sous"],["Tarot","Belote"],
   ["Jeu de rôle","Jeu de plateau"],["Escape game","Murder party"],
   ["Puzzle","Casse-tête"],["Karting","Laser game"],["Paintball","Airsoft"],
-  ["Pêche","Chasse"],["Jardinage","Apiculture"],["Origami","Poterie"],
-  ["Tricot","Crochet"],["Broderie","Tapisserie"],["Dessin","Aquarelle"],
-  ["Sculpture","Céramique"],["Calligraphie","Enluminure"],["Maquette","Diorama"],
-  ["Cosplay","LARP"],["Jeux vidéo","Jeux d'arcade"],["Flipper","Babyfoot"],
-  ["Pétanque","Cornhole"],["Badminton","Volley de plage"],
-  ["Carte à collectionner","Figurine"],["Lego","Playmobil"],
-
-  // Santé & corps
-  ["Allergie","Intolérance"],["Grippe","Rhume"],["Fracture","Entorse"],
-  ["Chirurgie","Anesthésie"],["Vaccin","Sérum"],["Aspirine","Ibuprofène"],
-  ["Yoga","Méditation"],["Pilates","Stretching"],["Musculation","CrossFit"],
-  ["Bras","Jambe"],["Main","Pied"],["Œil","Oreille"],
-  ["Cœur","Poumon"],["Foie","Rein"],["Cerveau","Moelle épinière"],
-  ["Artère","Veine"],["Os","Cartilage"],["Muscle","Tendon"],
-  ["Peau","Cuir chevelu"],["Ongle","Poil"],["Dent","Gencive"],
-  ["Sommeil","Sieste"],["Rêve","Cauchemar"],["Insomnie","Somnambulisme"],
-  ["Régime","Jeûne"],["Végétarien","Végétalien"],["Bio","Sans gluten"],
-
-  // Émotions & concepts
+  ["Origami","Poterie"],["Tricot","Crochet"],["Broderie","Tapisserie"],
+  ["Dessin","Aquarelle"],["Sculpture","Céramique"],["Maquette","Diorama"],
+  ["Cosplay","LARP"],["Flipper","Babyfoot"],["Carte à collectionner","Figurine"],
   ["Amour","Amitié"],["Jalousie","Envie"],["Colère","Frustration"],
   ["Joie","Euphorie"],["Tristesse","Mélancolie"],["Peur","Angoisse"],
   ["Surprise","Stupéfaction"],["Honte","Culpabilité"],["Fierté","Satisfaction"],
-  ["Espoir","Confiance"],["Nostalgie","Regret"],["Ennui","Apathie"],
-  ["Curiosité","Intérêt"],["Enthousiasme","Passion"],["Gratitude","Reconnaissance"],
-  ["Empathie","Compassion"],["Intuition","Instinct"],["Logique","Raison"],
-  ["Liberté","Indépendance"],["Justice","Équité"],["Vérité","Honnêteté"],
-
-  // Divers fun
+  ["Espoir","Confiance"],["Nostalgie","Regret"],["Curiosité","Intérêt"],
+  ["Enthousiasme","Passion"],["Gratitude","Reconnaissance"],["Empathie","Compassion"],
   ["Pirate","Corsaire"],["Ninja","Samouraï"],["Chevalier","Paladin"],
   ["Sorcière","Fée"],["Dragon","Wyverne"],["Licorne","Pégase"],
   ["Alien","Martien"],["Robot","Androïde"],["Fantôme","Esprit"],
   ["Loup-garou","Vampire"],["Momie","Golem"],["Zombie","Mort-vivant"],
   ["Super-héros","Justicier"],["Espion","Agent double"],["Détective","Enquêteur"],
   ["Magicien","Illusionniste"],["Acrobate","Jongleur"],["Mime","Clown"],
-  ["Astronaute","Cosmonaute"],["Archéologue","Explorateur"],["Botaniste","Naturaliste"],
-  ["Prison","Commissariat"],["Banque","Bijouterie"],["Mariage","Fiançailles"],
-  ["Île","Presqu'île"],["Trésor","Butin"],["Carte au trésor","Boussole"],
-
-  // École & savoirs
   ["Lycée","Collège"],["Université","Grande école"],["Thèse","Mémoire"],
   ["Mathématiques","Physique"],["Chimie","Biologie"],["Histoire","Géographie"],
-  ["Philosophie","Sociologie"],["Linguistique","Sémiotique"],
-  ["Bibliothèque","Médiathèque"],["Dictionnaire","Encyclopédie"],
-  ["Examen","Concours"],["Dissertation","Exposé"],["Cours","Conférence"],
-  ["Professeur","Maître de conférences"],["Élève","Étudiant"],
-  ["Carnet de notes","Bulletin"],["Règle","Compas"],["Crayon","Stylo"],
-  ["Tableau noir","Tableau blanc"],["Ardoise","Cahier"],
-
-  // Transport
+  ["Philosophie","Sociologie"],["Bibliothèque","Médiathèque"],["Dictionnaire","Encyclopédie"],
   ["Voiture","Moto"],["Vélo","Trottinette"],["Métro","Tramway"],
   ["Train","TGV"],["Avion","Hélicoptère"],["Bateau","Ferry"],
   ["Bus","Car"],["Taxi","VTC"],["Ambulance","Camion de pompiers"],
-  ["Tracteur","Moissonneuse-batteuse"],["Bulldozer","Grue"],
   ["Sous-marin","Bathyscaphe"],["Navette spatiale","Fusée"],
-  ["Montgolfière","Dirigeable"],["Kart","Quad"],["Jet ski","Hors-bord"],
-  ["Skateboard","Longboard"],["Rollers","Patin à glace"],
-
-  // Art & culture
+  ["Montgolfière","Dirigeable"],["Skateboard","Longboard"],
   ["Peinture","Aquarelle"],["Sculpture","Installation"],["Photographie","Illustration"],
   ["Roman","Nouvelle"],["Poésie","Slam"],["Bande dessinée","Manga"],
   ["Ballet","Danse contemporaine"],["Cirque","Cabaret"],["Théâtre","Opéra"],
-  ["Architecture","Design"],["Mode","Haute couture"],["Parfum","Cologne"],
-  ["Tatouage","Piercing"],["Maquillage","Coiffure"],["Nail art","Henna"],
-  ["Musée du Louvre","Musée d'Orsay"],["Guggenheim","MoMA"],
   ["Impressionnisme","Cubisme"],["Surréalisme","Dadaïsme"],["Pop art","Street art"],
-
-  // Religion & spiritualité
-  ["Cathédrale","Mosquée"],["Temple","Synagogue"],["Moine","Prêtre"],
-  ["Méditation","Prière"],["Karma","Dharma"],["Yin","Yang"],
-  ["Horoscope","Tarot"],["Cristal","Pendule"],["Chakra","Aura"],
-  ["Pèlerinage","Retraite spirituelle"],["Rituel","Cérémonie"],
-
-  // Science & espace
   ["Planète","Étoile"],["Comète","Météorite"],["Galaxie","Nébuleuse"],
-  ["Trou noir","Pulsar"],["Astronome","Astrophysicien"],
-  ["Télescope","Observatoire"],["Station spatiale","Satellite"],
-  ["Big Bang","Expansion de l'univers"],["Matière noire","Énergie sombre"],
+  ["Trou noir","Pulsar"],["Télescope","Observatoire"],["Station spatiale","Satellite"],
   ["Lune","Phobos"],["Mars","Venus"],["Jupiter","Saturne"],
   ["ADN","ARN"],["Cellule","Bactérie"],["Virus","Prion"],
-  ["Atome","Molécule"],["Neutron","Proton"],["Quark","Boson"],
-  ["Relativité","Quantique"],["Gravité","Magnétisme"],["Fusion","Fission"],
+  ["Atome","Molécule"],["Neutron","Proton"],["Relativité","Quantique"],
+  ["Gravité","Magnétisme"],["Fusion","Fission"],
 ];
 
-// ══════════════════════════════════════════════
+// ══════════════════════════════════════════════════
 // PLAYERS DATABASE (localStorage)
-// ══════════════════════════════════════════════
+// ══════════════════════════════════════════════════
 const DB_KEY = 'undercover_players_v2';
 
 function dbLoad() {
-  try {
-    return JSON.parse(localStorage.getItem(DB_KEY)) || {};
-  } catch { return {}; }
+  try { return JSON.parse(localStorage.getItem(DB_KEY)) || {}; }
+  catch { return {}; }
 }
 
 function dbSave(data) {
@@ -1124,9 +1031,7 @@ function dbAddPlayer(name) {
   if (!name.trim()) return;
   const db = dbLoad();
   const key = name.trim().toLowerCase();
-  if (!db[key]) {
-    db[key] = { name: name.trim(), games: 0, added: Date.now() };
-  }
+  if (!db[key]) db[key] = { name: name.trim(), games: 0, added: Date.now() };
   db[key].games = (db[key].games || 0) + 1;
   dbSave(db);
 }
@@ -1142,12 +1047,12 @@ function dbDeletePlayer(key) {
   dbSave(db);
 }
 
-// ══════════════════════════════════════════════
+// ══════════════════════════════════════════════════
 // GAME STATE
-// ══════════════════════════════════════════════
+// ══════════════════════════════════════════════════
 let cfg = { uc: 1, mw: 0 };
-let gamePlayers = []; // names
-let roles = [];       // { name, role, word }
+let gamePlayers = [];
+let roles = [];
 let currentReveal = 0;
 let eliminated = [];
 let round = 1;
@@ -1155,63 +1060,80 @@ let selectedVote = null;
 let citizenWord = '';
 let undercoverWord = '';
 
-// ══════════════════════════════════════════════
-// NAVIGATION
-// ══════════════════════════════════════════════
-function goto(id) {
+// ══════════════════════════════════════════════════
+// NAVIGATION — single clean function, no recursion
+// ══════════════════════════════════════════════════
+function showScreen(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   const el = document.getElementById(id);
   el.classList.add('active');
   el.scrollTop = 0;
+
+  // Screen-specific hooks
+  if (id === 's-config') {
+    initConfig();
+  } else if (id === 's-players-db') {
+    renderPlayersDB();
+  }
 }
 
-// ══════════════════════════════════════════════
+// ══════════════════════════════════════════════════
 // TOAST
-// ══════════════════════════════════════════════
-function showToast(msg, duration = 2000) {
+// ══════════════════════════════════════════════════
+let toastTimer = null;
+function showToast(msg, duration = 2200) {
   const t = document.getElementById('toast');
   t.textContent = msg;
   t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), duration);
+  if (toastTimer) clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), duration);
 }
 
-// ══════════════════════════════════════════════
+// ══════════════════════════════════════════════════
 // CONFIG SCREEN
-// ══════════════════════════════════════════════
+// ══════════════════════════════════════════════════
 function adj(key, delta) {
   const limits = { uc: [0, 4], mw: [0, 3] };
   cfg[key] = Math.max(limits[key][0], Math.min(limits[key][1], cfg[key] + delta));
   document.getElementById('val-' + key).textContent = cfg[key];
 }
 
-let playerRows = []; // array of { id, input }
-
 function initConfig() {
-  playerRows = [];
   document.getElementById('players-list').innerHTML = '';
   updatePlayersCount();
   refreshSuggestions();
 }
 
+function getRowIndex(rowEl) {
+  return Array.from(document.getElementById('players-list').children).indexOf(rowEl);
+}
+
 function addPlayerRow(name = '') {
-  const id = 'pr-' + Date.now() + Math.random();
+  const list = document.getElementById('players-list');
+  const rowIndex = list.children.length;
+  const pc = getPlayerColor(rowIndex);
+
   const row = document.createElement('div');
-  row.className = 'player-row' + (name ? ' saved-player' : '');
-  row.id = id;
+  row.className = 'player-row' + (name ? ' has-name' : '');
+  if (name) {
+    row.style.setProperty('--player-color', pc.color);
+    row.style.setProperty('--player-glow', pc.glow);
+  }
 
   const initials = name ? name.substring(0, 2).toUpperCase() : '?';
-  const avatarColor = name ? 'background:var(--accent);color:#0a0a0f;' : '';
+  const avStyle = name
+    ? `background:${pc.color};color:${pc.text};`
+    : '';
 
   row.innerHTML = `
-    <div class="player-avatar" id="av-${id}" style="${avatarColor}">${initials}</div>
-    <input class="player-input" placeholder="Nom du joueur…" value="${name}" maxlength="16"
-      oninput="onPlayerInput('${id}', this)"
-      onblur="onPlayerBlur('${id}', this)" />
-    <button class="player-delete" onclick="removePlayerRow('${id}')" title="Supprimer">×</button>
+    <div class="player-avatar${name ? ' has-color' : ''}" style="${avStyle}">${initials}</div>
+    <input class="player-input${name ? ' has-color' : ''}" placeholder="Nom du joueur…" value="${escapeAttr(name)}" maxlength="16"
+      oninput="onPlayerInput(this)"
+      style="${name ? '--player-color:' + pc.color + ';' : ''}" />
+    <button class="player-delete" onclick="removePlayerRow(this)" title="Supprimer">×</button>
   `;
 
-  document.getElementById('players-list').appendChild(row);
-  playerRows.push({ id, name });
+  list.appendChild(row);
   updatePlayersCount();
   refreshSuggestions();
 
@@ -1220,27 +1142,67 @@ function addPlayerRow(name = '') {
   }
 }
 
-function onPlayerInput(id, input) {
-  const val = input.value;
-  const av = document.getElementById('av-' + id);
-  if (av) {
-    av.textContent = val ? val.substring(0, 2).toUpperCase() : '?';
-    av.style = val ? 'background:var(--accent);color:#0a0a0f;' : '';
+function escapeAttr(str) {
+  return str.replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+
+function onPlayerInput(input) {
+  const row = input.closest('.player-row');
+  const list = document.getElementById('players-list');
+  const rowIndex = Array.from(list.children).indexOf(row);
+  const pc = getPlayerColor(rowIndex);
+  const val = input.value.trim();
+  const av = row.querySelector('.player-avatar');
+
+  if (val) {
+    av.textContent = val.substring(0, 2).toUpperCase();
+    av.style.background = pc.color;
+    av.style.color = pc.text;
+    av.classList.add('has-color');
+    input.classList.add('has-color');
+    input.style.setProperty('--player-color', pc.color);
+    row.classList.add('has-name');
+    row.style.setProperty('--player-color', pc.color);
+    row.style.setProperty('--player-glow', pc.glow);
+  } else {
+    av.textContent = '?';
+    av.style.background = '';
+    av.style.color = '';
+    av.classList.remove('has-color');
+    input.classList.remove('has-color');
+    input.style.removeProperty('--player-color');
+    row.classList.remove('has-name');
+    row.style.removeProperty('--player-color');
+    row.style.removeProperty('--player-glow');
   }
+
   updatePlayersCount();
   refreshSuggestions();
 }
 
-function onPlayerBlur(id, input) {
-  // nothing needed — we read values at game start
-}
-
-function removePlayerRow(id) {
-  const row = document.getElementById(id);
-  if (row) row.remove();
-  playerRows = playerRows.filter(r => r.id !== id);
+function removePlayerRow(btn) {
+  const row = btn.closest('.player-row');
+  row.remove();
+  // Re-apply colors after removal
+  recolorRows();
   updatePlayersCount();
   refreshSuggestions();
+}
+
+function recolorRows() {
+  const rows = document.querySelectorAll('#players-list .player-row');
+  rows.forEach((row, i) => {
+    const pc = getPlayerColor(i);
+    const val = row.querySelector('input').value.trim();
+    if (val) {
+      const av = row.querySelector('.player-avatar');
+      av.style.background = pc.color;
+      av.style.color = pc.text;
+      row.style.setProperty('--player-color', pc.color);
+      row.style.setProperty('--player-glow', pc.glow);
+      row.querySelector('input').style.setProperty('--player-color', pc.color);
+    }
+  });
 }
 
 function getPlayerNames() {
@@ -1271,37 +1233,32 @@ function refreshSuggestions() {
     const inGame = currentNames.includes(p.name.toLowerCase());
     const chip = document.createElement('div');
     chip.className = 'chip' + (inGame ? ' in-game' : '');
-    chip.innerHTML = (inGame ? '<div class="chip-dot"></div>' : '') + p.name;
+    chip.innerHTML = (inGame ? '<div class="chip-dot"></div>' : '') + escapeHtml(p.name);
     if (!inGame) chip.onclick = () => addPlayerRow(p.name);
     chips.appendChild(chip);
   });
 }
 
-// ══════════════════════════════════════════════
+function escapeHtml(str) {
+  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+// ══════════════════════════════════════════════════
 // START GAME
-// ══════════════════════════════════════════════
+// ══════════════════════════════════════════════════
 function startGame() {
   gamePlayers = getPlayerNames();
 
-  if (gamePlayers.length < 3) {
-    showToast('⚠️ Il faut au moins 3 joueurs !'); return;
-  }
-  if (cfg.uc + cfg.mw >= gamePlayers.length) {
-    showToast('⚠️ Trop d\'infiltrés pour ce nombre de joueurs !'); return;
-  }
-  if (cfg.uc + cfg.mw === 0) {
-    showToast('⚠️ Il faut au moins 1 Undercover ou Mr. White !'); return;
-  }
+  if (gamePlayers.length < 3) { showToast('⚠️ Il faut au moins 3 joueurs !'); return; }
+  if (cfg.uc + cfg.mw >= gamePlayers.length) { showToast('⚠️ Trop d\'infiltrés pour ce nombre de joueurs !'); return; }
+  if (cfg.uc + cfg.mw === 0) { showToast('⚠️ Il faut au moins 1 Undercover ou Mr. White !'); return; }
 
-  // Save players to DB
   gamePlayers.forEach(name => dbAddPlayer(name));
 
-  // Pick word pair
   const pair = PAIRS[Math.floor(Math.random() * PAIRS.length)];
   citizenWord = pair[0];
   undercoverWord = pair[1];
 
-  // Shuffle and assign roles
   const shuffled = [...gamePlayers].sort(() => Math.random() - 0.5);
   roles = shuffled.map((name, i) => {
     let role = 'citoyen';
@@ -1317,13 +1274,13 @@ function startGame() {
   showPass(0);
 }
 
-// ══════════════════════════════════════════════
+// ══════════════════════════════════════════════════
 // REVEAL FLOW
-// ══════════════════════════════════════════════
+// ══════════════════════════════════════════════════
 function showPass(idx) {
   currentReveal = idx;
   document.getElementById('pass-name').textContent = roles[idx].name;
-  goto('s-pass');
+  showScreen('s-pass');
 }
 
 function revealRole() {
@@ -1350,7 +1307,6 @@ function revealRole() {
     hintEl.textContent = r.role === 'undercover' ? 'Tu es l\'infiltré — bluff bien' : 'Défends ce mot discrètement';
   }
 
-  // Progress dots
   const dots = document.getElementById('progress-dots');
   dots.innerHTML = '';
   roles.forEach((_, i) => {
@@ -1359,7 +1315,7 @@ function revealRole() {
     dots.appendChild(d);
   });
 
-  goto('s-reveal');
+  showScreen('s-reveal');
 }
 
 function nextPlayer() {
@@ -1370,9 +1326,9 @@ function nextPlayer() {
   }
 }
 
-// ══════════════════════════════════════════════
+// ══════════════════════════════════════════════════
 // ROUND / VOTE
-// ══════════════════════════════════════════════
+// ══════════════════════════════════════════════════
 function startRound() {
   document.getElementById('round-label').textContent = `MANCHE ${round}`;
   selectedVote = null;
@@ -1383,12 +1339,11 @@ function startRound() {
     const row = document.createElement('div');
     row.className = 'vote-row' + (eliminated.includes(i) ? ' eliminated' : '');
     row.id = 'vr-' + i;
-
     const initials = r.name.substring(0, 2).toUpperCase();
     row.innerHTML = `
       <div class="vote-info">
         <div class="vote-avatar">${initials}</div>
-        <span class="vote-name">${r.name}</span>
+        <span class="vote-name">${escapeHtml(r.name)}</span>
       </div>
       <div class="vote-dot"></div>
     `;
@@ -1396,9 +1351,8 @@ function startRound() {
     list.appendChild(row);
   });
 
-  const btn = document.getElementById('vote-btn');
-  btn.disabled = true;
-  goto('s-round');
+  document.getElementById('vote-btn').disabled = true;
+  showScreen('s-round');
 }
 
 function selectVote(idx) {
@@ -1416,7 +1370,6 @@ function confirmVote() {
   const r = roles[selectedVote];
   eliminated.push(selectedVote);
 
-  // Build elim screen — NO word reveal
   const icons = { citoyen: '😵', undercover: '🕵️', mrwhite: '👻' };
   document.getElementById('elim-icon').textContent = icons[r.role];
   document.getElementById('elim-name').textContent = r.name.toUpperCase();
@@ -1426,7 +1379,6 @@ function confirmVote() {
   const labels = { citoyen: 'CITOYEN', undercover: 'UNDERCOVER', mrwhite: 'MR. WHITE' };
   eb.textContent = labels[r.role];
 
-  // ONLY show role, NOT word
   const subs = {
     citoyen: 'C\'était un citoyen… pas l\'infiltré.',
     undercover: 'L\'infiltré est démasqué !',
@@ -1445,14 +1397,13 @@ function confirmVote() {
     continueBtn.style.display = 'none';
   }
 
-  goto('s-elim');
+  showScreen('s-elim');
 }
 
 function judgeMrWhite() {
   const guess = document.getElementById('mw-guess').value.trim().toLowerCase();
   if (!guess) return;
-  const correct = citizenWord.toLowerCase();
-  if (guess === correct) {
+  if (guess === citizenWord.toLowerCase()) {
     endGame('mrwhite_win');
   } else {
     document.getElementById('mrwhite-guess-section').style.display = 'none';
@@ -1473,23 +1424,22 @@ function continueAfterElimCheck() {
   startRound();
 }
 
-// ══════════════════════════════════════════════
+// ══════════════════════════════════════════════════
 // WIN CHECK
-// ══════════════════════════════════════════════
+// ══════════════════════════════════════════════════
 function checkWin() {
   const alive = roles.map((r, i) => ({ ...r, i })).filter(r => !eliminated.includes(r.i));
   const aliveUC = alive.filter(r => r.role === 'undercover').length;
   const aliveMW = alive.filter(r => r.role === 'mrwhite').length;
   const aliveCit = alive.filter(r => r.role === 'citoyen').length;
-
   if (aliveUC === 0 && aliveMW === 0) return 'citizens_win';
   if (aliveUC + aliveMW >= aliveCit) return 'undercover_win';
   return null;
 }
 
-// ══════════════════════════════════════════════
+// ══════════════════════════════════════════════════
 // END GAME
-// ══════════════════════════════════════════════
+// ══════════════════════════════════════════════════
 function endGame(type) {
   const icons = { citizens_win: '🏆', undercover_win: '🕵️', mrwhite_win: '👻' };
   const titles = { citizens_win: 'CITOYENS\nGAGNENT !', undercover_win: 'INFILTRÉS\nGAGNENT !', mrwhite_win: 'MR. WHITE\nGAGNE !' };
@@ -1515,29 +1465,28 @@ function endGame(type) {
     row.innerHTML = `
       <div class="result-row-left">
         <div class="result-avatar">${initials}</div>
-        <span>${r.name}${elimBadge}</span>
+        <span>${escapeHtml(r.name)}${elimBadge}</span>
       </div>
       <span class="result-role-tag ${tagClass[r.role]}">${tagLabel[r.role]}</span>
     `;
     rolesEl.appendChild(row);
   });
 
-  goto('s-end');
+  showScreen('s-end');
 }
 
-// ══════════════════════════════════════════════
+// ══════════════════════════════════════════════════
 // REPLAY
-// ══════════════════════════════════════════════
+// ══════════════════════════════════════════════════
 function replayGame() {
-  initConfig();
-  // Re-add same players
-  gamePlayers.forEach(name => addPlayerRow(name));
-  goto('s-config');
+  const prevPlayers = [...gamePlayers];
+  showScreen('s-config');
+  prevPlayers.forEach(name => addPlayerRow(name));
 }
 
-// ══════════════════════════════════════════════
+// ══════════════════════════════════════════════════
 // PLAYERS DB SCREEN
-// ══════════════════════════════════════════════
+// ══════════════════════════════════════════════════
 function renderPlayersDB() {
   const list = document.getElementById('db-list');
   const all = dbGetAll();
@@ -1548,15 +1497,16 @@ function renderPlayersDB() {
   }
 
   list.innerHTML = '';
-  all.forEach(p => {
+  all.forEach((p, i) => {
+    const pc = getPlayerColor(i);
     const row = document.createElement('div');
     row.className = 'db-player-row';
-    const key = p.name.toLowerCase();
+    const key = p.name.toLowerCase().replace(/'/g, "\\'");
     row.innerHTML = `
-      <div class="player-avatar" style="background:var(--accent);color:#0a0a0f;">${p.name.substring(0,2).toUpperCase()}</div>
-      <span class="db-player-name">${p.name}</span>
+      <div class="player-avatar has-color" style="background:${pc.color};color:${pc.text};">${p.name.substring(0,2).toUpperCase()}</div>
+      <span class="db-player-name">${escapeHtml(p.name)}</span>
       <span class="db-player-games">${p.games} partie${p.games > 1 ? 's' : ''}</span>
-      <button class="db-delete" onclick="deleteDBPlayer('${key}')">×</button>
+      <button class="db-delete" onclick="deleteDBPlayer('${escapeAttr(p.name.toLowerCase())}')">×</button>
     `;
     list.appendChild(row);
   });
@@ -1568,18 +1518,9 @@ function deleteDBPlayer(key) {
   showToast('Joueur supprimé');
 }
 
-// Override goto to add screen-specific hooks
-const _goto = goto;
-function goto(id) {
-  _goto(id);
-  if (id === 's-config') { initConfig(); refreshSuggestions(); }
-  if (id === 's-players-db') { renderPlayersDB(); }
-}
-
-// ══════════════════════════════════════════════
-// INIT
-// ══════════════════════════════════════════════
-// Register Service Worker
+// ══════════════════════════════════════════════════
+// SERVICE WORKER (PWA)
+// ══════════════════════════════════════════════════
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('./sw.js').catch(() => {});
