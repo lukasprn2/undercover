@@ -1259,27 +1259,17 @@ function startGame() {
   citizenWord = pair[0];
   undercoverWord = pair[1];
 
-// Construire le tableau de rôles d'abord
 const rolesList = [];
 for (let i = 0; i < cfg.uc; i++) rolesList.push('undercover');
 for (let i = 0; i < cfg.mw; i++) rolesList.push('mrwhite');
 while (rolesList.length < gamePlayers.length) rolesList.push('citoyen');
-
-// Mélanger les rôles
 rolesList.sort(() => Math.random() - 0.5);
 
-// Associer chaque joueur à un rôle (ordre original des joueurs)
 roles = gamePlayers.map((name, i) => {
   const role = rolesList[i];
   const word = role === 'citoyen' ? citizenWord : role === 'undercover' ? undercoverWord : '';
   return { name, role, word };
-}); => {
-    let role = 'citoyen';
-    if (i < cfg.uc) role = 'undercover';
-    else if (i < cfg.uc + cfg.mw) role = 'mrwhite';
-    const word = role === 'citoyen' ? citizenWord : role === 'undercover' ? undercoverWord : '';
-    return { name, role, word };
-  });
+});
 
   eliminated = [];
   round = 1;
