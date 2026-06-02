@@ -3,162 +3,261 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#0a0a0f">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Undercover">
+<meta name="description" content="Le jeu de l'infiltré">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
 <title>Undercover</title>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
 <style>
-  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
   :root {
     --bg: #0a0a0f;
     --card: #13131a;
+    --card2: #1a1a24;
     --border: #1e1e2e;
+    --border2: #2a2a3e;
     --accent: #e8ff3b;
+    --accent-dim: rgba(232,255,59,0.12);
     --red: #ff3b5c;
+    --red-dim: rgba(255,59,92,0.15);
     --muted: #555570;
+    --muted2: #3a3a55;
     --text: #e8e8f0;
+    --text2: #a0a0c0;
   }
+
+  html { height: 100%; }
 
   body {
     font-family: 'DM Sans', sans-serif;
     background: var(--bg);
     color: var(--text);
     min-height: 100dvh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: radial-gradient(ellipse 80% 60% at 50% -10%, rgba(232,255,59,0.04) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
   }
 
   .screen {
     display: none;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
-    width: 100vw;
     min-height: 100dvh;
-    padding: 32px 24px;
-    animation: fadeUp 0.35s ease;
+    padding: 48px 24px 40px;
+    position: relative;
+    z-index: 1;
   }
-  .screen.active { display: flex; }
+  .screen.active { display: flex; animation: fadeUp 0.3s ease; }
+  .screen.center { justify-content: center; }
 
   @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(18px); }
+    from { opacity: 0; transform: translateY(16px); }
     to   { opacity: 1; transform: translateY(0); }
   }
 
-  /* ── HOME ── */
+  /* ── SCROLLABLE screens ── */
+  .screen.scrollable { overflow-y: auto; justify-content: flex-start; padding-top: 32px; }
+
+  /* ── LOGO ── */
   .logo {
     font-family: 'Bebas Neue', sans-serif;
-    font-size: clamp(72px, 20vw, 108px);
-    letter-spacing: 4px;
-    line-height: 1;
+    font-size: clamp(80px, 22vw, 120px);
+    letter-spacing: 5px;
+    line-height: 0.9;
     color: var(--accent);
-    text-shadow: 0 0 60px rgba(232,255,59,0.25);
+    text-shadow: 0 0 80px rgba(232,255,59,0.2), 0 0 160px rgba(232,255,59,0.08);
+    text-align: center;
   }
   .logo-sub {
-    font-size: 13px;
-    letter-spacing: 5px;
+    font-size: 11px;
+    letter-spacing: 6px;
     text-transform: uppercase;
     color: var(--muted);
-    margin-top: 6px;
-    margin-bottom: 48px;
+    margin-top: 8px;
+    margin-bottom: 56px;
+    text-align: center;
   }
 
   /* ── BUTTONS ── */
   .btn {
     width: 100%;
-    max-width: 320px;
-    padding: 18px 24px;
+    max-width: 340px;
+    padding: 18px 28px;
     border: none;
-    border-radius: 4px;
+    border-radius: 3px;
     font-family: 'DM Sans', sans-serif;
-    font-size: 16px;
+    font-size: 15px;
     font-weight: 500;
     cursor: pointer;
-    transition: transform 0.12s, opacity 0.12s;
+    transition: transform 0.1s, opacity 0.1s, box-shadow 0.2s;
+    letter-spacing: 0.5px;
+    position: relative;
+    overflow: hidden;
   }
-  .btn:active { transform: scale(0.97); opacity: 0.85; }
-  .btn-primary { background: var(--accent); color: #0a0a0f; }
+  .btn::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: white;
+    opacity: 0;
+    transition: opacity 0.15s;
+  }
+  .btn:active::after { opacity: 0.06; }
+  .btn:active { transform: scale(0.98); }
+  .btn-primary {
+    background: var(--accent);
+    color: #0a0a0f;
+    font-weight: 600;
+    box-shadow: 0 0 30px rgba(232,255,59,0.15);
+  }
+  .btn-primary:hover { box-shadow: 0 0 40px rgba(232,255,59,0.25); }
   .btn-ghost {
     background: transparent;
     color: var(--muted);
-    border: 1px solid var(--border);
-    margin-top: 12px;
+    border: 1px solid var(--border2);
+    margin-top: 10px;
   }
-  .btn-danger { background: var(--red); color: #fff; }
+  .btn-ghost:hover { border-color: var(--muted2); color: var(--text2); }
+  .btn-danger {
+    background: var(--red);
+    color: #fff;
+    box-shadow: 0 0 24px rgba(255,59,92,0.2);
+  }
+  .btn-danger:hover { box-shadow: 0 0 36px rgba(255,59,92,0.3); }
+  .btn-icon {
+    background: var(--card);
+    border: 1px solid var(--border);
+    color: var(--text2);
+    width: 42px; height: 42px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+    cursor: pointer;
+    padding: 0;
+    min-width: 0;
+    transition: border-color 0.15s, color 0.15s, transform 0.1s;
+  }
+  .btn-icon:active { transform: scale(0.92); }
+  .btn-icon:hover { border-color: var(--accent); color: var(--accent); }
   .btn-sm {
-    padding: 12px 20px;
-    font-size: 14px;
+    padding: 10px 20px;
+    font-size: 13px;
     width: auto;
-    min-width: 120px;
+    max-width: none;
+    min-width: 100px;
+    letter-spacing: 1px;
+  }
+
+  /* ── SECTION TITLE ── */
+  .section-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 38px;
+    letter-spacing: 2px;
+    color: var(--accent);
+    align-self: flex-start;
+    margin-bottom: 6px;
+  }
+  .section-sub {
+    font-size: 13px;
+    color: var(--muted);
+    align-self: flex-start;
+    margin-bottom: 28px;
+    line-height: 1.5;
   }
 
   /* ── CONFIG ── */
-  .section-title {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 36px;
-    letter-spacing: 2px;
-    color: var(--accent);
-    margin-bottom: 28px;
-    align-self: flex-start;
-  }
   .config-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 12px;
+    gap: 10px;
     width: 100%;
     max-width: 340px;
-    margin-bottom: 32px;
+    margin-bottom: 28px;
   }
   .config-card {
     background: var(--card);
     border: 1px solid var(--border);
     border-radius: 8px;
-    padding: 16px 12px;
+    padding: 16px 10px;
     text-align: center;
   }
   .config-card label {
-    font-size: 11px;
+    font-size: 10px;
     letter-spacing: 3px;
     text-transform: uppercase;
     color: var(--muted);
     display: block;
     margin-bottom: 10px;
   }
-  .config-card .counter {
+  .counter {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 14px;
+    gap: 12px;
   }
   .count-btn {
-    width: 32px; height: 32px;
+    width: 30px; height: 30px;
     border-radius: 50%;
-    border: 1px solid var(--border);
+    border: 1px solid var(--border2);
     background: transparent;
     color: var(--text);
-    font-size: 20px;
+    font-size: 18px;
     cursor: pointer;
     display: flex; align-items: center; justify-content: center;
-    transition: border-color 0.15s, color 0.15s;
+    transition: border-color 0.15s, color 0.15s, transform 0.1s;
+    line-height: 1;
+    padding-bottom: 1px;
   }
-  .count-btn:active { border-color: var(--accent); color: var(--accent); }
+  .count-btn:active { border-color: var(--accent); color: var(--accent); transform: scale(0.9); }
   .count-val {
     font-family: 'Bebas Neue', sans-serif;
-    font-size: 40px;
+    font-size: 44px;
     color: var(--accent);
-    min-width: 36px;
+    min-width: 32px;
     line-height: 1;
+    text-shadow: 0 0 20px rgba(232,255,59,0.3);
   }
 
-  /* players list */
-  .players-list {
+  /* ── PLAYERS SECTION ── */
+  .players-section {
     width: 100%;
     max-width: 340px;
+    margin-bottom: 24px;
+  }
+  .players-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+  }
+  .players-label {
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .players-count {
+    font-size: 11px;
+    color: var(--muted);
+  }
+  .players-list {
     display: flex;
     flex-direction: column;
-    gap: 8px;
-    margin-bottom: 28px;
+    gap: 7px;
+    margin-bottom: 10px;
   }
   .player-row {
     display: flex;
@@ -167,13 +266,22 @@
     background: var(--card);
     border: 1px solid var(--border);
     border-radius: 6px;
-    padding: 10px 14px;
+    padding: 11px 14px;
+    transition: border-color 0.15s;
+    position: relative;
   }
-  .player-num {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 22px;
-    color: var(--muted);
-    min-width: 22px;
+  .player-row:focus-within { border-color: var(--border2); }
+  .player-avatar {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    background: var(--muted2);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--bg);
+    flex-shrink: 0;
+    text-transform: uppercase;
+    letter-spacing: 0;
   }
   .player-input {
     flex: 1;
@@ -184,43 +292,120 @@
     font-size: 15px;
     color: var(--text);
     caret-color: var(--accent);
+    min-width: 0;
   }
-  .player-input::placeholder { color: var(--muted); }
+  .player-input::placeholder { color: var(--muted2); font-style: italic; }
+  .player-delete {
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    border: none;
+    background: transparent;
+    color: var(--muted);
+    font-size: 16px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0.5;
+    transition: opacity 0.15s, color 0.15s;
+    flex-shrink: 0;
+    padding: 0;
+  }
+  .player-delete:hover { opacity: 1; color: var(--red); }
+  .player-row.saved-player { border-color: var(--border2); }
+  .player-row.saved-player .player-avatar { background: var(--accent); }
 
-  /* ── PASS SCREEN ── */
+  .add-player-btn {
+    width: 100%;
+    padding: 11px;
+    background: transparent;
+    border: 1px dashed var(--border2);
+    border-radius: 6px;
+    color: var(--muted);
+    font-size: 13px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    gap: 8px;
+    transition: border-color 0.15s, color 0.15s;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .add-player-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* saved players suggestions */
+  .suggestions-panel {
+    background: var(--card2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    margin-bottom: 16px;
+    overflow: hidden;
+    width: 100%;
+    max-width: 340px;
+  }
+  .suggestions-header {
+    padding: 10px 14px 6px;
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .suggestions-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 6px 14px 12px;
+  }
+  .chip {
+    padding: 5px 12px;
+    border-radius: 20px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    font-size: 13px;
+    color: var(--text2);
+    cursor: pointer;
+    transition: border-color 0.15s, color 0.15s, background 0.15s;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .chip:hover { border-color: var(--accent); color: var(--accent); }
+  .chip.in-game { opacity: 0.35; pointer-events: none; }
+  .chip-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+  }
+
+  /* ── PASS ── */
   .pass-title {
     font-family: 'Bebas Neue', sans-serif;
-    font-size: clamp(48px, 14vw, 72px);
+    font-size: clamp(52px, 15vw, 80px);
     letter-spacing: 3px;
     text-align: center;
-    line-height: 1.05;
+    line-height: 1;
   }
-  .pass-name { color: var(--accent); }
+  .pass-name { color: var(--accent); display: block; }
   .pass-instruction {
     font-size: 14px;
     color: var(--muted);
     text-align: center;
-    margin-top: 10px;
-    margin-bottom: 48px;
-    line-height: 1.6;
+    margin-top: 14px;
+    margin-bottom: 52px;
+    line-height: 1.7;
   }
 
   /* ── ROLE REVEAL ── */
   .role-badge {
-    font-size: 11px;
+    font-size: 10px;
     letter-spacing: 4px;
     text-transform: uppercase;
-    padding: 6px 16px;
+    padding: 5px 16px;
     border-radius: 2px;
     margin-bottom: 20px;
+    font-weight: 500;
   }
-  .role-badge.citoyen  { background: rgba(232,255,59,0.12); color: var(--accent); }
-  .role-badge.undercover { background: rgba(255,59,92,0.15); color: var(--red); }
-  .role-badge.mrwhite  { background: rgba(255,255,255,0.08); color: #aaa; }
+  .role-badge.citoyen  { background: var(--accent-dim); color: var(--accent); }
+  .role-badge.undercover { background: var(--red-dim); color: var(--red); }
+  .role-badge.mrwhite  { background: rgba(255,255,255,0.06); color: #888; }
 
   .role-word {
     font-family: 'Bebas Neue', sans-serif;
-    font-size: clamp(56px, 16vw, 88px);
+    font-size: clamp(60px, 18vw, 96px);
     letter-spacing: 2px;
     text-align: center;
     line-height: 1;
@@ -230,18 +415,41 @@
     font-size: 13px;
     color: var(--muted);
     text-align: center;
-    margin-bottom: 48px;
+    margin-bottom: 44px;
     letter-spacing: 1px;
+    font-style: italic;
   }
 
-  /* ── GAME / VOTE ── */
+  /* progress dots */
+  .progress-bar {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 40px;
+  }
+  .prog-dot {
+    width: 5px; height: 5px;
+    border-radius: 50%;
+    background: var(--border2);
+    transition: background 0.3s, transform 0.3s;
+  }
+  .prog-dot.done { background: var(--accent); transform: scale(1.2); }
+
+  /* ── ROUND / VOTE ── */
+  .round-info {
+    font-size: 11px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 28px;
+    align-self: flex-start;
+  }
   .players-vote {
     width: 100%;
     max-width: 340px;
     display: flex;
     flex-direction: column;
-    gap: 10px;
-    margin-bottom: 28px;
+    gap: 8px;
+    margin-bottom: 24px;
   }
   .vote-row {
     display: flex;
@@ -250,44 +458,105 @@
     background: var(--card);
     border: 1px solid var(--border);
     border-radius: 8px;
-    padding: 14px 16px;
+    padding: 15px 16px;
     cursor: pointer;
-    transition: border-color 0.15s;
+    transition: border-color 0.15s, background 0.15s;
+    user-select: none;
   }
-  .vote-row.selected { border-color: var(--red); }
+  .vote-row:active { background: var(--card2); }
+  .vote-row.selected { border-color: var(--red); background: rgba(255,59,92,0.05); }
   .vote-row.eliminated {
-    opacity: 0.3;
+    opacity: 0.25;
     pointer-events: none;
-    text-decoration: line-through;
+  }
+  .vote-info { display: flex; align-items: center; gap: 12px; }
+  .vote-avatar {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    background: var(--muted2);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--bg);
+    text-transform: uppercase;
+    flex-shrink: 0;
   }
   .vote-name { font-size: 16px; font-weight: 500; }
   .vote-dot {
-    width: 18px; height: 18px;
+    width: 20px; height: 20px;
     border-radius: 50%;
-    border: 2px solid var(--border);
+    border: 2px solid var(--border2);
     transition: background 0.15s, border-color 0.15s;
+    flex-shrink: 0;
   }
   .vote-row.selected .vote-dot { background: var(--red); border-color: var(--red); }
 
-  /* ── RESULT ── */
-  .result-icon {
-    font-size: 72px;
-    margin-bottom: 16px;
-  }
-  .result-title {
+  /* ── ELIMINATED ── */
+  .elim-icon { font-size: 80px; margin-bottom: 16px; }
+  .elim-name {
     font-family: 'Bebas Neue', sans-serif;
     font-size: clamp(44px, 13vw, 68px);
     letter-spacing: 3px;
     text-align: center;
-    line-height: 1.05;
-    margin-bottom: 10px;
+    line-height: 1;
+    margin-bottom: 12px;
   }
-  .result-sub {
+  .elim-sub {
     font-size: 14px;
     color: var(--muted);
     text-align: center;
     margin-bottom: 36px;
-    line-height: 1.7;
+    line-height: 1.6;
+  }
+
+  /* Mr White guess */
+  .mrwhite-section {
+    width: 100%;
+    max-width: 340px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px;
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  .mrwhite-section p { font-size: 13px; color: var(--text2); margin-bottom: 16px; line-height: 1.6; }
+  .guess-input {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--border2);
+    border-radius: 6px;
+    padding: 14px 18px;
+    font-size: 20px;
+    font-family: 'Bebas Neue', sans-serif;
+    letter-spacing: 3px;
+    color: var(--accent);
+    text-align: center;
+    outline: none;
+    margin-bottom: 14px;
+    transition: border-color 0.2s;
+  }
+  .guess-input:focus { border-color: var(--accent); }
+  .guess-input::placeholder { color: var(--muted2); font-size: 16px; letter-spacing: 2px; }
+
+  /* ── END ── */
+  .result-icon { font-size: 80px; margin-bottom: 16px; }
+  .result-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(44px, 13vw, 72px);
+    letter-spacing: 3px;
+    text-align: center;
+    line-height: 1;
+    margin-bottom: 10px;
+    white-space: pre-line;
+  }
+  .result-sub {
+    font-size: 13px;
+    color: var(--muted);
+    text-align: center;
+    margin-bottom: 32px;
+    line-height: 1.8;
+    white-space: pre-line;
   }
   .result-roles {
     width: 100%;
@@ -302,38 +571,74 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 12px 16px;
+    padding: 13px 16px;
     border-bottom: 1px solid var(--border);
     font-size: 14px;
+    gap: 10px;
   }
   .result-row:last-child { border-bottom: none; }
-  .result-role-tag {
+  .result-row-left { display: flex; align-items: center; gap: 10px; }
+  .result-avatar {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    background: var(--muted2);
+    display: flex; align-items: center; justify-content: center;
     font-size: 11px;
+    font-weight: 600;
+    color: var(--bg);
+    text-transform: uppercase;
+    flex-shrink: 0;
+  }
+  .result-role-tag {
+    font-size: 10px;
     letter-spacing: 2px;
     text-transform: uppercase;
     padding: 3px 8px;
     border-radius: 2px;
+    white-space: nowrap;
   }
-  .tag-citoyen { background: rgba(232,255,59,0.1); color: var(--accent); }
-  .tag-undercover { background: rgba(255,59,92,0.12); color: var(--red); }
-  .tag-mrwhite { background: rgba(255,255,255,0.06); color: #999; }
+  .tag-citoyen { background: var(--accent-dim); color: var(--accent); }
+  .tag-undercover { background: var(--red-dim); color: var(--red); }
+  .tag-mrwhite { background: rgba(255,255,255,0.05); color: #888; }
+  .result-row.elim-row { opacity: 0.5; }
 
-  .divider { width: 40px; height: 2px; background: var(--border); margin: 4px 0 24px; align-self: flex-start; }
-
-  /* progress dots */
-  .progress-bar {
-    display: flex;
-    gap: 6px;
+  /* ── RULES ── */
+  .rules-body {
+    max-width: 340px;
+    width: 100%;
+    font-size: 14px;
+    color: var(--text2);
+    line-height: 1.9;
     margin-bottom: 36px;
   }
-  .prog-dot {
-    width: 6px; height: 6px;
-    border-radius: 50%;
-    background: var(--border);
-    transition: background 0.2s;
-  }
-  .prog-dot.done { background: var(--accent); }
+  .rules-body p { margin-bottom: 14px; }
+  .rules-body strong { color: var(--text); font-weight: 500; }
 
+  /* ── PLAYERS DB SCREEN ── */
+  .db-player-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--border);
+  }
+  .db-player-row:last-child { border-bottom: none; }
+  .db-player-name { flex: 1; font-size: 15px; }
+  .db-player-games { font-size: 12px; color: var(--muted); }
+  .db-delete {
+    width: 28px; height: 28px;
+    background: transparent;
+    border: none;
+    color: var(--muted);
+    cursor: pointer;
+    font-size: 16px;
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0.5;
+    transition: opacity 0.15s, color 0.15s;
+  }
+  .db-delete:hover { opacity: 1; color: var(--red); }
+
+  /* ── TAP HINT ── */
   .tap-hint {
     font-size: 11px;
     letter-spacing: 3px;
@@ -342,60 +647,78 @@
     margin-top: 16px;
   }
 
-  /* ── WORD GUESS (Mr White) ── */
-  .guess-input {
-    width: 100%;
-    max-width: 320px;
-    background: var(--card);
-    border: 1px solid var(--accent);
-    border-radius: 6px;
-    padding: 16px 18px;
-    font-size: 20px;
-    font-family: 'Bebas Neue', sans-serif;
-    letter-spacing: 2px;
-    color: var(--accent);
-    text-align: center;
-    outline: none;
-    margin-bottom: 24px;
-  }
+  /* ── DIVIDER ── */
+  .divider { width: 32px; height: 1px; background: var(--border2); margin: 4px 0 20px; align-self: flex-start; }
 
-  .round-info {
-    font-size: 12px;
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    color: var(--muted);
-    margin-bottom: 24px;
+  /* ── TOAST ── */
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: var(--card2);
+    border: 1px solid var(--border2);
+    border-radius: 20px;
+    padding: 10px 20px;
+    font-size: 13px;
+    color: var(--text2);
+    z-index: 9999;
+    opacity: 0;
+    transition: opacity 0.2s, transform 0.2s;
+    white-space: nowrap;
   }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  /* vote disabled */
+  .btn:disabled { opacity: 0.35; cursor: not-allowed; }
+  .btn:disabled:active { transform: none; }
+
+  /* scrollbar */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
 </style>
 </head>
 <body>
 
-<!-- ── SCREEN: HOME ── -->
-<div class="screen active" id="s-home">
+<!-- ── HOME ── -->
+<div class="screen center active" id="s-home">
   <div class="logo">UNDER<br>COVER</div>
   <div class="logo-sub">Le jeu de l'infiltré</div>
   <button class="btn btn-primary" onclick="goto('s-config')">Nouvelle partie</button>
-  <button class="btn btn-ghost" onclick="goto('s-rules')">Règles</button>
+  <button class="btn btn-ghost" onclick="goto('s-players-db')">Joueurs enregistrés</button>
+  <button class="btn btn-ghost" onclick="goto('s-rules')">Règles du jeu</button>
 </div>
 
-<!-- ── SCREEN: RULES ── -->
-<div class="screen" id="s-rules">
-  <div class="section-title">RÈGLES</div>
-  <div style="max-width:340px;width:100%;font-size:14px;color:#aaa;line-height:1.9;margin-bottom:36px;">
-    <p>Chaque joueur reçoit un mot secret. Les <span style="color:var(--accent)">Citoyens</span> ont le même mot. L'<span style="color:var(--red)">Undercover</span> a un mot proche mais différent. <span style="color:#ccc">Mr. White</span> ne reçoit rien.</p>
-    <br>
-    <p>Chacun donne un indice sur son mot (1 mot). Puis tout le monde vote pour éliminer le suspect le plus louche.</p>
-    <br>
-    <p>Si Mr. White est éliminé, il peut tenter de deviner le mot des citoyens pour gagner.</p>
-    <br>
-    <p><strong style="color:var(--text)">Victoire :</strong> Les citoyens gagnent en éliminant tous les infiltrés. Les infiltrés gagnent s'ils sont en minorité non détectée.</p>
+<!-- ── RULES ── -->
+<div class="screen center" id="s-rules">
+  <div class="section-title" style="align-self:center;margin-bottom:24px;">RÈGLES</div>
+  <div class="rules-body">
+    <p>Chaque joueur reçoit un mot secret en privé. Les <strong style="color:var(--accent)">Citoyens</strong> ont le même mot. L'<strong style="color:var(--red)">Undercover</strong> a un mot proche mais différent. <strong style="color:#ccc">Mr. White</strong> ne reçoit rien du tout.</p>
+    <p>À tour de rôle, chaque joueur donne <strong>un seul indice</strong> sur son mot. Pas trop précis, pas trop vague. Puis tout le monde vote pour éliminer le suspect le plus louche.</p>
+    <p>Si <strong style="color:#ccc">Mr. White</strong> est éliminé, il a une chance de deviner le mot des citoyens pour renverser la partie.</p>
+    <p><strong>Victoire Citoyens :</strong> Tous les infiltrés sont éliminés.<br>
+    <strong>Victoire Infiltrés :</strong> Ils sont en minorité non détectée (autant ou plus que les citoyens).<br>
+    <strong>Victoire Mr. White :</strong> Il est éliminé mais devine le mot.</p>
   </div>
-  <button class="btn btn-primary" onclick="goto('s-home')">Retour</button>
+  <button class="btn btn-primary" onclick="goto('s-home')">← Retour</button>
 </div>
 
-<!-- ── SCREEN: CONFIG ── -->
-<div class="screen" id="s-config">
+<!-- ── PLAYERS DB ── -->
+<div class="screen scrollable" id="s-players-db">
   <div class="section-title">JOUEURS</div>
+  <div class="section-sub">Tous les joueurs enregistrés</div>
+  <div style="width:100%;max-width:340px;background:var(--card);border:1px solid var(--border);border-radius:8px;overflow:hidden;margin-bottom:24px;" id="db-list">
+    <div style="padding:24px;text-align:center;color:var(--muted);font-size:13px;font-style:italic;">Aucun joueur enregistré</div>
+  </div>
+  <button class="btn btn-ghost" onclick="goto('s-home')">← Retour</button>
+</div>
+
+<!-- ── CONFIG ── -->
+<div class="screen scrollable" id="s-config">
+  <div class="section-title">NOUVELLE PARTIE</div>
+  <div class="section-sub">Configure ta partie</div>
+
   <div class="config-grid">
     <div class="config-card">
       <label>Undercover</label>
@@ -414,20 +737,37 @@
       </div>
     </div>
   </div>
-  <div class="players-list" id="players-list"></div>
-  <button class="btn btn-primary" onclick="startGame()">Lancer</button>
-  <button class="btn btn-ghost" onclick="goto('s-home')">Retour</button>
+
+  <div id="suggestions-section" class="suggestions-panel" style="display:none;">
+    <div class="suggestions-header">Joueurs connus — ajoute rapidement</div>
+    <div class="suggestions-chips" id="suggestions-chips"></div>
+  </div>
+
+  <div class="players-section">
+    <div class="players-header">
+      <span class="players-label">Joueurs</span>
+      <span class="players-count" id="players-count">0 joueur</span>
+    </div>
+    <div class="players-list" id="players-list"></div>
+    <button class="add-player-btn" onclick="addPlayerRow()">
+      <span style="font-size:18px;line-height:1;">+</span> Ajouter un joueur
+    </button>
+  </div>
+
+  <button class="btn btn-primary" onclick="startGame()" id="start-btn">Lancer la partie</button>
+  <button class="btn btn-ghost" onclick="goto('s-home')">← Retour</button>
+  <div style="height:20px;"></div>
 </div>
 
-<!-- ── SCREEN: PASS ── -->
-<div class="screen" id="s-pass">
-  <div class="pass-title">Passe à<br><span class="pass-name" id="pass-name">—</span></div>
-  <div class="pass-instruction">Donne le téléphone à ce joueur.<br>Personne d'autre ne doit regarder.</div>
+<!-- ── PASS ── -->
+<div class="screen center" id="s-pass">
+  <div class="pass-title">C'est à toi,<br><span class="pass-name" id="pass-name">—</span></div>
+  <div class="pass-instruction">Passe le téléphone à ce joueur.<br>Personne d'autre ne doit regarder.</div>
   <button class="btn btn-primary" onclick="revealRole()">Je suis prêt·e 👀</button>
 </div>
 
-<!-- ── SCREEN: ROLE REVEAL ── -->
-<div class="screen" id="s-reveal">
+<!-- ── ROLE REVEAL ── -->
+<div class="screen center" id="s-reveal">
   <div id="role-badge-el" class="role-badge citoyen">CITOYEN</div>
   <div class="role-word" id="role-word">—</div>
   <div class="role-hint" id="role-hint">Souviens-toi bien</div>
@@ -436,94 +776,136 @@
   <div class="tap-hint">Ne montre à personne</div>
 </div>
 
-<!-- ── SCREEN: ROUND ── -->
-<div class="screen" id="s-round">
+<!-- ── ROUND ── -->
+<div class="screen scrollable" id="s-round">
   <div class="round-info" id="round-label">MANCHE 1</div>
   <div class="section-title">VOTE</div>
   <div class="divider"></div>
-  <p style="font-size:13px;color:var(--muted);margin-bottom:20px;max-width:300px;text-align:center;">Chacun donne 1 indice, puis votez pour éliminer le plus suspect.</p>
+  <p style="font-size:13px;color:var(--muted);margin-bottom:22px;max-width:300px;line-height:1.6;">Chacun donne 1 indice, puis votez pour éliminer le plus suspect.</p>
   <div class="players-vote" id="vote-list"></div>
-  <button class="btn btn-danger" id="vote-btn" onclick="confirmVote()">Éliminer</button>
+  <button class="btn btn-danger" id="vote-btn" onclick="confirmVote()" disabled>Éliminer ce joueur</button>
+  <div style="height:24px;"></div>
 </div>
 
-<!-- ── SCREEN: ELIMINATED ── -->
-<div class="screen" id="s-elim">
-  <div class="result-icon" id="elim-icon">💀</div>
-  <div class="result-title" id="elim-name">—</div>
-  <div id="elim-role-badge" class="role-badge citoyen" style="margin-bottom:12px;"></div>
-  <div class="result-sub" id="elim-word">—</div>
-  <div id="mrwhite-guess-section" style="display:none;width:100%;max-width:340px;text-align:center;">
-    <p style="font-size:13px;color:var(--muted);margin-bottom:14px;">Mr. White peut tenter de deviner le mot des citoyens&nbsp;!</p>
-    <input class="guess-input" id="mw-guess" placeholder="TON MOT" />
-    <button class="btn btn-danger" onclick="judgeMrWhite()">Je joue ce mot</button>
+<!-- ── ELIMINATED ── -->
+<div class="screen center" id="s-elim">
+  <div class="elim-icon" id="elim-icon">💀</div>
+  <div class="elim-name" id="elim-name">—</div>
+  <div id="elim-role-badge" class="role-badge citoyen" style="margin-bottom:14px;"></div>
+  <div class="elim-sub" id="elim-sub">—</div>
+
+  <div class="mrwhite-section" id="mrwhite-guess-section" style="display:none;">
+    <p>Mr. White peut tenter de deviner le mot des citoyens pour retourner la partie !</p>
+    <input class="guess-input" id="mw-guess" placeholder="TON MOT…" autocomplete="off" autocorrect="off" spellcheck="false" />
+    <button class="btn btn-danger btn-sm" onclick="judgeMrWhite()" style="width:100%;">Jouer ce mot</button>
   </div>
-  <button class="btn btn-primary" id="elim-continue" onclick="continueAfterElim()" style="margin-top:16px;">Continuer</button>
+
+  <button class="btn btn-primary" id="elim-continue" onclick="continueAfterElim()" style="margin-top:8px;">Continuer →</button>
 </div>
 
-<!-- ── SCREEN: END ── -->
-<div class="screen" id="s-end">
+<!-- ── END ── -->
+<div class="screen center scrollable" id="s-end">
   <div class="result-icon" id="end-icon">🏆</div>
   <div class="result-title" id="end-title">—</div>
   <div class="result-sub" id="end-sub">—</div>
   <div class="result-roles" id="end-roles"></div>
-  <button class="btn btn-primary" onclick="resetGame()">Rejouer</button>
-  <button class="btn btn-ghost" onclick="goto('s-home')">Menu</button>
+  <button class="btn btn-primary" onclick="replayGame()">Rejouer</button>
+  <button class="btn btn-ghost" onclick="goto('s-home')">← Menu</button>
+  <div style="height:24px;"></div>
 </div>
 
+<div class="toast" id="toast"></div>
+
 <script>
-// ── WORD PAIRS ──
+// ══════════════════════════════════════════════
+// WORD PAIRS DATABASE — 500+ pairs
+// ══════════════════════════════════════════════
 const PAIRS = [
-  // Originaux
-  ["Chat","Chien"],["Plage","Piscine"],["Pizza","Tarte flambée"],
-  ["Avion","Hélicoptère"],["Café","Thé"],["Cinéma","Théâtre"],
-  ["Ski","Snowboard"],["Soleil","Lune"],["Football","Rugby"],
-  ["Bière","Cidre"],["Château","Manoir"],["Téléphone","Tablette"],
-  ["Sushi","Maki"],["Guitare","Basse"],["Forêt","Jungle"],
-  ["Vampire","Zombie"],["Champagne","Prosecco"],["Discothèque","Bar"],
-  ["Banque","Bijouterie"],["Médecin","Chirurgien"],["Hôtel","Auberge"],
-  ["Printemps","Automne"],["Lion","Tigre"],["Whisky","Rhum"],
-  ["Astronaute","Cosmonaute"],["Prison","Commissariat"],["Mariage","Fiançailles"],
-  ["Île","Presqu'île"],["Pomme","Poire"],["Train","Métro"],
-  // Animaux
-  ["Loup","Renard"],["Dauphin","Requin"],["Aigle","Faucon"],
-  ["Cheval","Âne"],["Vache","Chèvre"],["Cochon","Sanglier"],
-  ["Lapin","Lièvre"],["Ours","Panda"],["Crocodile","Alligator"],
-  ["Perroquet","Pie"],["Mouton","Agneau"],["Grenouille","Crapaud"],
-  ["Araignée","Scorpion"],["Pieuvre","Calmar"],["Baleine","Dauphin"],
-  ["Fourmi","Termite"],["Abeille","Guêpe"],["Papillon","Libellule"],
-  ["Serpent","Lézard"],["Flamant rose","Pélican"],["Gorille","Chimpanzé"],
-  ["Tortue","Crocodile"],["Lynx","Guépard"],["Bison","Buffle"],
+  // Animaux domestiques & proches
+  ["Chat","Chien"],["Lapin","Cochon d'Inde"],["Perroquet","Perruche"],
+  ["Hamster","Gerbille"],["Tortue","Lézard"],["Poisson rouge","Carpe koï"],
+  ["Canari","Pinson"],["Furet","Belette"],["Chèvre","Mouton"],["Cochon","Sanglier"],
+
+  // Animaux sauvages
+  ["Lion","Tigre"],["Loup","Renard"],["Ours","Panda"],["Aigle","Faucon"],
+  ["Dauphin","Requin"],["Baleine","Orque"],["Crocodile","Alligator"],
+  ["Gorille","Chimpanzé"],["Lynx","Guépard"],["Bison","Buffle"],
   ["Manchot","Pingouin"],["Hibou","Chouette"],["Cigogne","Héron"],
-  ["Truite","Saumon"],["Langouste","Homard"],["Moule","Huître"],
-  // Nourriture
-  ["Croissant","Pain au chocolat"],["Baguette","Ficelle"],["Fromage","Yaourt"],
-  ["Hamburger","Hot-dog"],["Frite","Chip"],["Crêpe","Gaufre"],
-  ["Tarte","Quiche"],["Soupe","Bouillon"],["Salade","Coleslaw"],
-  ["Saucisse","Merguez"],["Poulet rôti","Canard laqué"],["Steak","Côtelette"],
-  ["Beurre","Margarine"],["Confiture","Miel"],["Chocolat noir","Chocolat au lait"],
+  ["Flamant rose","Pélican"],["Pieuvre","Calmar"],["Araignée","Scorpion"],
+  ["Grenouille","Crapaud"],["Serpent","Lézard"],["Abeille","Guêpe"],
+  ["Papillon","Libellule"],["Fourmi","Termite"],["Truite","Saumon"],
+  ["Homard","Langouste"],["Moule","Huître"],["Mouton","Agneau"],
+  ["Cheval","Âne"],["Vache","Bison"],["Chameau","Dromadaire"],
+  ["Rhinocéros","Hippopotame"],["Éléphant","Mammouth"],["Girafe","Okapi"],
+  ["Zèbre","Antilope"],["Kangourou","Wallaby"],["Koala","Wombat"],
+  ["Lama","Alpaga"],["Paon","Faisan"],["Vautour","Condor"],
+  ["Toucan","Perroquet"],["Raie","Requin-marteau"],["Méduse","Anémone"],
+  ["Crabe","Homard"],["Crevette","Gambas"],["Anguille","Murène"],
+
+  // Nourriture — boulangerie & pâtisserie
+  ["Croissant","Pain au chocolat"],["Baguette","Ficelle"],["Pain de mie","Pain brioché"],
   ["Macaron","Éclair"],["Madeleine","Financier"],["Beignet","Churro"],
-  ["Cheddar","Gouda"],["Brie","Camembert"],["Roquefort","Gorgonzola"],
-  ["Ananas","Mangue"],["Cerise","Groseille"],["Raisin","Mirabelle"],
+  ["Tarte","Quiche"],["Crêpe","Gaufre"],["Brioche","Kouglof"],
+  ["Chouquette","Profiterole"],["Millefeuille","Napoléon"],["Opéra","Forêt-noire"],
+  ["Flan","Crème brûlée"],["Île flottante","Mousse au chocolat"],
+  ["Tiramisu","Panna cotta"],["Tarte Tatin","Tarte aux pommes"],
+
+  // Nourriture — plats
+  ["Pizza","Tarte flambée"],["Lasagne","Gratin dauphinois"],
+  ["Risotto","Paella"],["Tajine","Couscous"],["Ratatouille","Caponata"],
+  ["Hamburger","Hot-dog"],["Frite","Chip"],["Sushi","Maki"],
+  ["Soupe","Bouillon"],["Salade","Coleslaw"],["Saucisse","Merguez"],
+  ["Steak","Côtelette"],["Poulet rôti","Canard laqué"],["Côte de bœuf","Entrecôte"],
+  ["Fondue","Raclette"],["Choucroute","Pot-au-feu"],["Quenelle","Boulette"],
+  ["Wrap","Burrito"],["Kebab","Shawarma"],["Banh mi","Bánh mì"],
+  ["Ramen","Pho"],["Pad thaï","Wok de nouilles"],["Gyoza","Ravioli chinois"],
+  ["Samosa","Nems"],["Falafel","Kefta"],["Shakshuka","Œufs au plat"],
+  ["Omelette","Fritatta"],["Galette","Blini"],["Bruschetta","Tartine"],
+  ["Ravioli","Tortellini"],["Gnocchi","Spätzle"],["Moussaka","Pastitsio"],
+
+  // Nourriture — fromages
+  ["Brie","Camembert"],["Roquefort","Gorgonzola"],["Cheddar","Gouda"],
+  ["Emmental","Gruyère"],["Comté","Beaufort"],["Mozzarella","Burrata"],
+  ["Feta","Chèvre frais"],["Parmesan","Pecorino"],["Reblochon","Munster"],
+
+  // Nourriture — fruits & légumes
+  ["Pomme","Poire"],["Raisin","Mirabelle"],["Cerise","Groseille"],
+  ["Ananas","Mangue"],["Kiwi","Fruit de la passion"],["Pastèque","Melon"],
+  ["Fraise","Framboise"],["Mûre","Myrtille"],["Abricot","Pêche"],
+  ["Prune","Quetsche"],["Citron","Lime"],["Orange","Clémentine"],
+  ["Banane","Plantain"],["Avocat","Guacamole"],["Noix de coco","Noix"],
   ["Courgette","Concombre"],["Brocoli","Chou-fleur"],["Carotte","Navet"],
-  ["Cannelle","Muscade"],["Basilic","Persil"],["Curry","Paprika"],
-  ["Ketchup","Mayonnaise"],["Moutarde","Raifort"],["Vinaigre","Citron"],
-  ["Lasagne","Gratin dauphinois"],["Risotto","Paella"],["Tajine","Couscous"],
-  ["Baklava","Loukoum"],["Mochi","Taiyaki"],["Churros","Beignet"],
+  ["Poivron","Piment"],["Aubergine","Tomate"],["Épinards","Blettes"],
+  ["Asperge","Poireau"],["Betterave","Radis"],["Artichaut","Cardon"],
+  ["Champignon","Truffe"],["Lentille","Pois chiche"],["Haricot","Fève"],
+  ["Maïs","Blé"],["Riz","Quinoa"],["Patate douce","Pomme de terre"],
+
   // Boissons
+  ["Café","Thé"],["Latte","Cappuccino"],["Expresso","Ristretto"],
+  ["Thé vert","Thé noir"],["Kombucha","Kéfir"],["Smoothie","Jus pressé"],
   ["Coca","Pepsi"],["Jus d'orange","Jus de pomme"],["Limonade","Orangeade"],
   ["Vin rouge","Vin rosé"],["Bordeaux","Bourgogne"],["Porto","Sherry"],
-  ["Vodka","Gin"],["Tequila","Mezcal"],["Cognac","Armagnac"],
+  ["Champagne","Prosecco"],["Vodka","Gin"],["Tequila","Mezcal"],
+  ["Cognac","Armagnac"],["Whisky","Rhum"],["Bière","Cidre"],
   ["Mojito","Caïpirinha"],["Cosmopolitan","Martini"],["Sangria","Punch"],
-  ["Latte","Cappuccino"],["Expresso","Ristretto"],["Thé vert","Thé noir"],
-  ["Kombucha","Kéfir"],["Smoothie","Jus pressé"],["Sirop de fraise","Grenadine"],
-  // Vêtements & mode
+  ["Amaretto","Baileys"],["Absinthe","Pastis"],["Calvados","Pommeau"],
+  ["Sirop de fraise","Grenadine"],["Eau gazeuse","Eau pétillante"],
+
+  // Vêtements
   ["Manteau","Pardessus"],["Veste","Blazer"],["Pull","Sweat"],
   ["Jean","Chino"],["Short","Bermuda"],["Robe","Jupe"],
   ["Baskets","Tennis"],["Mocassins","Derbies"],["Sandales","Tongs"],
   ["Casquette","Bob"],["Béret","Bonnet"],["Foulard","Écharpe"],
   ["Sac à main","Pochette"],["Ceinture","Bretelles"],["Cravate","Nœud papillon"],
   ["Bikini","Maillot une pièce"],["Pyjama","Nuisette"],["Imperméable","Poncho"],
-  // Maison & objets
+  ["Gilet","Cardigan"],["Polo","T-shirt"],["Chemise","Blouse"],
+  ["Legging","Collant"],["Culotte","Boxer"],["Soutien-gorge","Bralette"],
+  ["Slip de bain","Short de surf"],["Tuxedo","Smoking"],["Salopette","Combinaison"],
+  ["Bottes","Bottines"],["Escarpins","Ballerines"],["Mules","Sabots"],
+  ["Lunettes de soleil","Lunettes de vue"],["Montre","Bracelet connecté"],
+  ["Bague","Alliance"],["Collier","Pendentif"],["Boucles d'oreilles","Clips"],
+
+  // Maison
   ["Canapé","Fauteuil"],["Lit","Hamac"],["Table","Bureau"],
   ["Armoire","Commode"],["Miroir","Tableau"],["Lampe","Lustre"],
   ["Lave-vaisselle","Lave-linge"],["Micro-ondes","Four"],["Réfrigérateur","Congélateur"],
@@ -531,51 +913,81 @@ const PAIRS = [
   ["Couteau","Fourchette"],["Assiette","Bol"],["Tasse","Mug"],
   ["Savon","Gel douche"],["Brosse à dents","Fil dentaire"],["Shampooing","Après-shampooing"],
   ["Rideau","Store"],["Tapis","Moquette"],["Parquet","Carrelage"],
+  ["Baignoire","Jacuzzi"],["Douche","Hammam"],["Lavabo","Évier"],
+  ["Radiateur","Poêle"],["Climatiseur","Ventilateur"],["Cheminée","Insert"],
+  ["Balcon","Terrasse"],["Jardin","Veranda"],["Cave","Grenier"],
+  ["Interphone","Visiophone"],["Alarme","Détecteur de fumée"],
+  ["Peinture","Papier peint"],["Parquet","Linoléum"],["Brique","Parpaing"],
+
   // Sports
   ["Tennis","Badminton"],["Natation","Water-polo"],["Judo","Karaté"],
   ["Boxe","MMA"],["Cyclisme","Triathlon"],["Marathon","Semi-marathon"],
   ["Escalade","Alpinisme"],["Surf","Kitesurf"],["Voile","Kayak"],
-  ["Golf","Pétanque"],["Bowling","Billard"],["Fléchettes","Palet"],
-  ["Volleyball","Handball"],["Basketball","Netball"],["Baseball","Cricket"],
-  ["Patinage artistique","Patinage de vitesse"],["Luge","Bobsleigh"],["Biathlon","Ski de fond"],
-  ["Equitation","Polo"],["Tir à l'arc","Javelot"],["Escrime","Lutte"],
+  ["Golf","Pétanque"],["Bowling","Billard"],["Football","Rugby"],
+  ["Basketball","Netball"],["Volleyball","Handball"],["Baseball","Cricket"],
+  ["Patinage artistique","Patinage de vitesse"],["Luge","Bobsleigh"],
+  ["Biathlon","Ski de fond"],["Ski","Snowboard"],["Équitation","Polo"],
+  ["Tir à l'arc","Javelot"],["Escrime","Lutte"],["Haltérophilie","Powerlifting"],
+  ["CrossFit","Calisthenics"],["Yoga","Pilates"],["Musculation","Stretching"],
+  ["Pétanque","Bocce"],["Fléchettes","Billard"],["Squash","Racquetball"],
+  ["Ping-pong","Tennis de table"],["Padel","Pickleball"],
+  ["Plongée","Apnée"],["Parachutisme","Deltaplane"],["Parapente","Wingsuit"],
+
   // Musique
   ["Rock","Métal"],["Jazz","Blues"],["Reggae","Ska"],
-  ["Hip-hop","Rap"],["Electro","Techno"],["Pop","R&B"],
+  ["Hip-hop","Rap"],["Électro","Techno"],["Pop","R&B"],
   ["Classique","Baroque"],["Opéra","Comédie musicale"],["Flamenco","Tango"],
   ["Violon","Alto"],["Trompette","Trombone"],["Flûte","Clarinette"],
   ["Piano","Orgue"],["Batterie","Percussions"],["Harpe","Lyre"],
   ["DJ","Beatmaker"],["Chorale","A cappella"],["Concert","Festival"],
-  // Films & séries
+  ["Bossa nova","Samba"],["Salsa","Merengue"],["K-pop","J-pop"],
+  ["Gospel","Soul"],["Country","Folk"],["Punk","Grunge"],
+  ["Ambient","Chillout"],["Drum & bass","Dubstep"],["House","Deep house"],
+  ["Synthétiseur","Sampler"],["Guitare acoustique","Guitare électrique"],
+  ["Contrebasse","Violoncelle"],["Accordéon","Bandonéon"],["Mandoline","Banjo"],
+  ["Ukulélé","Guitare hawaïenne"],["Sitar","Oud"],["Kora","Balafon"],
+
+  // Cinéma & séries
   ["Thriller","Film noir"],["Comédie romantique","Comédie dramatique"],
-  ["Documentaire","Reportage"],["Dessin animé","Manga"],
+  ["Documentaire","Reportage"],["Dessin animé","Anime"],
   ["Science-fiction","Fantasy"],["Western","Péplum"],
   ["Film d'horreur","Film de suspense"],["Action","Aventure"],
   ["Biopic","Film historique"],["Court-métrage","Long-métrage"],
-  // Lieux & voyages
-  ["Camping","Glamping"],["Auberge de jeunesse","Hôtel capsule"],
-  ["Safari","Trek"],["Croisière","Traversée"],["Road trip","Tour du monde"],
-  ["Montagne","Colline"],["Vallée","Gorge"],["Lac","Étang"],
-  ["Grotte","Tunnel"],["Phare","Tour"],["Cathédrale","Basilique"],
-  ["Musée","Galerie"],["Marché","Bazar"],["Port","Marina"],
-  ["Aéroport","Gare"],["Autoroute","Route nationale"],["Pont","Viaduc"],
-  ["Paris","Lyon"],["Marseille","Nice"],["Tokyo","Osaka"],
-  ["New York","Los Angeles"],["Londres","Édimbourg"],["Rome","Milan"],
+  ["Série policière","Série médicale"],["Sitcom","Dramédie"],
+  ["Film muet","Film en noir et blanc"],["Mockumentary","Docusérie"],
+  ["Réalisateur","Scénariste"],["Acteur principal","Second rôle"],
+  ["Avant-première","Sortie mondiale"],["Festival de Cannes","Oscars"],
+  ["Streaming","Cinéma"],["Blu-ray","DVD"],
+
   // Tech & digital
-  ["Smartphone","Phablet"],["Ordinateur portable","Ultrabook"],["Imprimante","Scanner"],
-  ["Wifi","Bluetooth"],["USB","USB-C"],["Disque dur","SSD"],
+  ["Smartphone","Phablet"],["Ordinateur portable","Ultrabook"],
+  ["Imprimante","Scanner"],["Wifi","Bluetooth"],["USB","USB-C"],
   ["Instagram","TikTok"],["Twitter","Mastodon"],["Facebook","LinkedIn"],
   ["Google","Bing"],["Netflix","Disney+"],["Spotify","Deezer"],
   ["Bitcoin","Ethereum"],["IA","Robot"],["Drone","Satellite"],
-  ["Clavier","Souris"],["Écran","Projecteur"],["Casque VR","Lunettes AR"],
+  ["Clavier","Souris"],["Casque VR","Lunettes AR"],
+  ["Serveur","Cloud"],["Application","Logiciel"],["Site web","Application mobile"],
+  ["Algorithme","Intelligence artificielle"],["Blockchain","Cryptomonnaie"],
+  ["Podcast","Webinaire"],["Influenceur","Créateur de contenu"],
+  ["Gaming","Esport"],["Console","PC gaming"],["Nintendo Switch","Steam Deck"],
+  ["ChatBot","Assistant vocal"],["Deepfake","Filtre AR"],
+  ["Fibre optique","4G"],["Cybersécurité","Pare-feu"],
+
   // Nature & météo
   ["Tornade","Cyclone"],["Avalanche","Glissement de terrain"],
   ["Tsunami","Raz-de-marée"],["Sécheresse","Canicule"],
   ["Orage","Tempête"],["Brouillard","Brume"],["Givre","Verglas"],
-  ["Arc-en-ciel","Aurore boréale"],["Eclipse solaire","Eclipse lunaire"],
-  ["Volcan","Geyser"],["Séisme","Tremblement de terre"],
-  ["Désert","Steppe"],["Toundra","Taïga"],["Savane","Prairie"],
-  ["Récif corallien","Mangrove"],["Marécage","Tourbière"],
+  ["Arc-en-ciel","Aurore boréale"],["Éclipse solaire","Éclipse lunaire"],
+  ["Volcan","Geyser"],["Désert","Steppe"],["Toundra","Taïga"],
+  ["Savane","Prairie"],["Récif corallien","Mangrove"],["Marécage","Tourbière"],
+  ["Falaise","Canyon"],["Fjord","Baie"],["Delta","Estuaire"],
+  ["Lac","Étang"],["Rivière","Fleuve"],["Cascade","Chute d'eau"],
+  ["Glacier","Banquise"],["Iceberg","Pack"],["Dune","Désert de sel"],
+  ["Grotte","Gouffre"],["Géode","Cristal"],["Galet","Silex"],
+  ["Mousse","Lichen"],["Champignon","Truffe"],["Cactus","Aloé vera"],
+  ["Chêne","Hêtre"],["Sapin","Pin"],["Bambou","Roseau"],
+  ["Tulipe","Rose"],["Lavande","Menthe"],["Tournesol","Coquelicot"],
+
   // Métiers
   ["Pompier","Ambulancier"],["Policier","Gendarme"],["Juge","Avocat"],
   ["Architecte","Urbaniste"],["Plombier","Électricien"],["Menuisier","Charpentier"],
@@ -583,93 +995,320 @@ const PAIRS = [
   ["Photographe","Vidéaste"],["Journaliste","Reporter"],["Écrivain","Scénariste"],
   ["Dentiste","Orthodontiste"],["Kiné","Ostéopathe"],["Vétérinaire","Zoologiste"],
   ["Comptable","Auditeur"],["Commercial","Marketeur"],["RH","Recruteur"],
+  ["Pilote","Contrôleur aérien"],["Marin","Capitaine"],["Astronaute","Cosmonaute"],
+  ["Chercheur","Professeur"],["Bibliothécaire","Archiviste"],["Traducteur","Interprète"],
+  ["Acteur","Danseur"],["Musicien","Chanteur"],["Peintre","Sculpteur"],
+  ["Styliste","Couturier"],["Bijoutier","Horloger"],["Pharmacien","Biologiste"],
+  ["Chirurgien","Anesthésiste"],["Sage-femme","Infirmière"],["Diététicien","Nutritionniste"],
+  ["Géologue","Géographe"],["Météorologue","Climatologue"],["Économiste","Sociologue"],
+
+  // Lieux & voyages
+  ["Camping","Glamping"],["Auberge de jeunesse","Hôtel capsule"],
+  ["Safari","Trek"],["Croisière","Traversée"],["Road trip","Tour du monde"],
+  ["Cathédrale","Basilique"],["Musée","Galerie"],["Marché","Bazar"],
+  ["Port","Marina"],["Aéroport","Gare"],["Phare","Tour"],
+  ["Paris","Lyon"],["Marseille","Nice"],["Tokyo","Osaka"],
+  ["New York","Los Angeles"],["Londres","Édimbourg"],["Rome","Milan"],
+  ["Madrid","Barcelone"],["Lisbonne","Porto"],["Amsterdam","Rotterdam"],
+  ["Vienne","Budapest"],["Prague","Varsovie"],["Dublin","Édimbourg"],
+  ["Sydney","Melbourne"],["Toronto","Vancouver"],["Dubai","Abu Dhabi"],
+  ["Bali","Java"],["Maldives","Seychelles"],["Martinique","Guadeloupe"],
+  ["Monastère","Abbaye"],["Château","Manoir"],["Palais","Villa"],
+  ["Gratte-ciel","Tour Eiffel"],["Pyramide","Sphinx"],["Colisée","Panthéon"],
+  ["Pont","Viaduc"],["Tunnel","Souterrain"],["Autoroute","Route nationale"],
+
   // Jeux & loisirs
-  ["Échecs","Dame"],["Scrabble","Boggle"],["Monopoly","Risk"],
+  ["Échecs","Dames"],["Scrabble","Boggle"],["Monopoly","Risk"],
   ["Poker","Blackjack"],["Roulette","Machine à sous"],["Tarot","Belote"],
   ["Jeu de rôle","Jeu de plateau"],["Escape game","Murder party"],
-  ["Puzzle","Casse-tête"],["Dé","Toupie"],["Yo-yo","Diabolo"],
-  ["Karting","Laser game"],["Paintball","Airsoft"],["Fête foraine","Parc d'attractions"],
+  ["Puzzle","Casse-tête"],["Karting","Laser game"],["Paintball","Airsoft"],
   ["Pêche","Chasse"],["Jardinage","Apiculture"],["Origami","Poterie"],
   ["Tricot","Crochet"],["Broderie","Tapisserie"],["Dessin","Aquarelle"],
-  // Corps humain & santé
-  ["Bras","Jambe"],["Main","Pied"],["Œil","Oreille"],
-  ["Cœur","Poumon"],["Foie","Rein"],["Cerveau","Moelle épinière"],
+  ["Sculpture","Céramique"],["Calligraphie","Enluminure"],["Maquette","Diorama"],
+  ["Cosplay","LARP"],["Jeux vidéo","Jeux d'arcade"],["Flipper","Babyfoot"],
+  ["Pétanque","Cornhole"],["Badminton","Volley de plage"],
+  ["Carte à collectionner","Figurine"],["Lego","Playmobil"],
+
+  // Santé & corps
   ["Allergie","Intolérance"],["Grippe","Rhume"],["Fracture","Entorse"],
   ["Chirurgie","Anesthésie"],["Vaccin","Sérum"],["Aspirine","Ibuprofène"],
   ["Yoga","Méditation"],["Pilates","Stretching"],["Musculation","CrossFit"],
+  ["Bras","Jambe"],["Main","Pied"],["Œil","Oreille"],
+  ["Cœur","Poumon"],["Foie","Rein"],["Cerveau","Moelle épinière"],
+  ["Artère","Veine"],["Os","Cartilage"],["Muscle","Tendon"],
+  ["Peau","Cuir chevelu"],["Ongle","Poil"],["Dent","Gencive"],
+  ["Sommeil","Sieste"],["Rêve","Cauchemar"],["Insomnie","Somnambulisme"],
+  ["Régime","Jeûne"],["Végétarien","Végétalien"],["Bio","Sans gluten"],
+
   // Émotions & concepts
   ["Amour","Amitié"],["Jalousie","Envie"],["Colère","Frustration"],
   ["Joie","Euphorie"],["Tristesse","Mélancolie"],["Peur","Angoisse"],
   ["Surprise","Stupéfaction"],["Honte","Culpabilité"],["Fierté","Satisfaction"],
-  ["Espoir","Confiance"],["Désespoir","Résignation"],["Nostalgie","Regret"],
+  ["Espoir","Confiance"],["Nostalgie","Regret"],["Ennui","Apathie"],
+  ["Curiosité","Intérêt"],["Enthousiasme","Passion"],["Gratitude","Reconnaissance"],
+  ["Empathie","Compassion"],["Intuition","Instinct"],["Logique","Raison"],
+  ["Liberté","Indépendance"],["Justice","Équité"],["Vérité","Honnêteté"],
+
   // Divers fun
   ["Pirate","Corsaire"],["Ninja","Samouraï"],["Chevalier","Paladin"],
   ["Sorcière","Fée"],["Dragon","Wyverne"],["Licorne","Pégase"],
-  ["Alien","Martien"],["Robot","Androïde"],["Clone","Jumeau"],
-  ["Fantôme","Esprit"],["Loup-garou","Vampire"],["Momie","Golem"],
+  ["Alien","Martien"],["Robot","Androïde"],["Fantôme","Esprit"],
+  ["Loup-garou","Vampire"],["Momie","Golem"],["Zombie","Mort-vivant"],
   ["Super-héros","Justicier"],["Espion","Agent double"],["Détective","Enquêteur"],
   ["Magicien","Illusionniste"],["Acrobate","Jongleur"],["Mime","Clown"],
+  ["Astronaute","Cosmonaute"],["Archéologue","Explorateur"],["Botaniste","Naturaliste"],
+  ["Prison","Commissariat"],["Banque","Bijouterie"],["Mariage","Fiançailles"],
+  ["Île","Presqu'île"],["Trésor","Butin"],["Carte au trésor","Boussole"],
+
+  // École & savoirs
+  ["Lycée","Collège"],["Université","Grande école"],["Thèse","Mémoire"],
+  ["Mathématiques","Physique"],["Chimie","Biologie"],["Histoire","Géographie"],
+  ["Philosophie","Sociologie"],["Linguistique","Sémiotique"],
+  ["Bibliothèque","Médiathèque"],["Dictionnaire","Encyclopédie"],
+  ["Examen","Concours"],["Dissertation","Exposé"],["Cours","Conférence"],
+  ["Professeur","Maître de conférences"],["Élève","Étudiant"],
+  ["Carnet de notes","Bulletin"],["Règle","Compas"],["Crayon","Stylo"],
+  ["Tableau noir","Tableau blanc"],["Ardoise","Cahier"],
+
+  // Transport
+  ["Voiture","Moto"],["Vélo","Trottinette"],["Métro","Tramway"],
+  ["Train","TGV"],["Avion","Hélicoptère"],["Bateau","Ferry"],
+  ["Bus","Car"],["Taxi","VTC"],["Ambulance","Camion de pompiers"],
+  ["Tracteur","Moissonneuse-batteuse"],["Bulldozer","Grue"],
+  ["Sous-marin","Bathyscaphe"],["Navette spatiale","Fusée"],
+  ["Montgolfière","Dirigeable"],["Kart","Quad"],["Jet ski","Hors-bord"],
+  ["Skateboard","Longboard"],["Rollers","Patin à glace"],
+
+  // Art & culture
+  ["Peinture","Aquarelle"],["Sculpture","Installation"],["Photographie","Illustration"],
+  ["Roman","Nouvelle"],["Poésie","Slam"],["Bande dessinée","Manga"],
+  ["Ballet","Danse contemporaine"],["Cirque","Cabaret"],["Théâtre","Opéra"],
+  ["Architecture","Design"],["Mode","Haute couture"],["Parfum","Cologne"],
+  ["Tatouage","Piercing"],["Maquillage","Coiffure"],["Nail art","Henna"],
+  ["Musée du Louvre","Musée d'Orsay"],["Guggenheim","MoMA"],
+  ["Impressionnisme","Cubisme"],["Surréalisme","Dadaïsme"],["Pop art","Street art"],
+
+  // Religion & spiritualité
+  ["Cathédrale","Mosquée"],["Temple","Synagogue"],["Moine","Prêtre"],
+  ["Méditation","Prière"],["Karma","Dharma"],["Yin","Yang"],
+  ["Horoscope","Tarot"],["Cristal","Pendule"],["Chakra","Aura"],
+  ["Pèlerinage","Retraite spirituelle"],["Rituel","Cérémonie"],
+
+  // Science & espace
+  ["Planète","Étoile"],["Comète","Météorite"],["Galaxie","Nébuleuse"],
+  ["Trou noir","Pulsar"],["Astronome","Astrophysicien"],
+  ["Télescope","Observatoire"],["Station spatiale","Satellite"],
+  ["Big Bang","Expansion de l'univers"],["Matière noire","Énergie sombre"],
+  ["Lune","Phobos"],["Mars","Venus"],["Jupiter","Saturne"],
+  ["ADN","ARN"],["Cellule","Bactérie"],["Virus","Prion"],
+  ["Atome","Molécule"],["Neutron","Proton"],["Quark","Boson"],
+  ["Relativité","Quantique"],["Gravité","Magnétisme"],["Fusion","Fission"],
 ];
 
-// ── STATE ──
+// ══════════════════════════════════════════════
+// PLAYERS DATABASE (localStorage)
+// ══════════════════════════════════════════════
+const DB_KEY = 'undercover_players_v2';
+
+function dbLoad() {
+  try {
+    return JSON.parse(localStorage.getItem(DB_KEY)) || {};
+  } catch { return {}; }
+}
+
+function dbSave(data) {
+  try { localStorage.setItem(DB_KEY, JSON.stringify(data)); } catch {}
+}
+
+function dbAddPlayer(name) {
+  if (!name.trim()) return;
+  const db = dbLoad();
+  const key = name.trim().toLowerCase();
+  if (!db[key]) {
+    db[key] = { name: name.trim(), games: 0, added: Date.now() };
+  }
+  db[key].games = (db[key].games || 0) + 1;
+  dbSave(db);
+}
+
+function dbGetAll() {
+  const db = dbLoad();
+  return Object.values(db).sort((a, b) => b.games - a.games || a.name.localeCompare(b.name));
+}
+
+function dbDeletePlayer(key) {
+  const db = dbLoad();
+  delete db[key];
+  dbSave(db);
+}
+
+// ══════════════════════════════════════════════
+// GAME STATE
+// ══════════════════════════════════════════════
 let cfg = { uc: 1, mw: 0 };
-let players = [];
-let roles = []; // { name, role:'citoyen'|'undercover'|'mrwhite', word }
+let gamePlayers = []; // names
+let roles = [];       // { name, role, word }
 let currentReveal = 0;
-let eliminated = []; // indexes
+let eliminated = [];
 let round = 1;
 let selectedVote = null;
 let citizenWord = '';
 let undercoverWord = '';
 
-// ── NAVIGATION ──
+// ══════════════════════════════════════════════
+// NAVIGATION
+// ══════════════════════════════════════════════
 function goto(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
+  const el = document.getElementById(id);
+  el.classList.add('active');
+  el.scrollTop = 0;
 }
 
-// ── CONFIG ──
+// ══════════════════════════════════════════════
+// TOAST
+// ══════════════════════════════════════════════
+function showToast(msg, duration = 2000) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), duration);
+}
+
+// ══════════════════════════════════════════════
+// CONFIG SCREEN
+// ══════════════════════════════════════════════
 function adj(key, delta) {
-  const limits = { uc: [0,3], mw: [0,2] };
+  const limits = { uc: [0, 4], mw: [0, 3] };
   cfg[key] = Math.max(limits[key][0], Math.min(limits[key][1], cfg[key] + delta));
-  document.getElementById('val-'+key).textContent = cfg[key];
+  document.getElementById('val-' + key).textContent = cfg[key];
 }
 
-function buildPlayerList() {
-  const list = document.getElementById('players-list');
-  list.innerHTML = '';
-  for (let i = 1; i <= 6; i++) {
-    const row = document.createElement('div');
-    row.className = 'player-row';
-    row.innerHTML = `<span class="player-num">${i}</span>
-      <input class="player-input" id="p${i}" placeholder="Joueur ${i}" maxlength="14" />`;
-    list.appendChild(row);
+let playerRows = []; // array of { id, input }
+
+function initConfig() {
+  playerRows = [];
+  document.getElementById('players-list').innerHTML = '';
+  updatePlayersCount();
+  refreshSuggestions();
+}
+
+function addPlayerRow(name = '') {
+  const id = 'pr-' + Date.now() + Math.random();
+  const row = document.createElement('div');
+  row.className = 'player-row' + (name ? ' saved-player' : '');
+  row.id = id;
+
+  const initials = name ? name.substring(0, 2).toUpperCase() : '?';
+  const avatarColor = name ? 'background:var(--accent);color:#0a0a0f;' : '';
+
+  row.innerHTML = `
+    <div class="player-avatar" id="av-${id}" style="${avatarColor}">${initials}</div>
+    <input class="player-input" placeholder="Nom du joueur…" value="${name}" maxlength="16"
+      oninput="onPlayerInput('${id}', this)"
+      onblur="onPlayerBlur('${id}', this)" />
+    <button class="player-delete" onclick="removePlayerRow('${id}')" title="Supprimer">×</button>
+  `;
+
+  document.getElementById('players-list').appendChild(row);
+  playerRows.push({ id, name });
+  updatePlayersCount();
+  refreshSuggestions();
+
+  if (!name) {
+    setTimeout(() => row.querySelector('input').focus(), 50);
   }
 }
 
-// ── START ──
+function onPlayerInput(id, input) {
+  const val = input.value;
+  const av = document.getElementById('av-' + id);
+  if (av) {
+    av.textContent = val ? val.substring(0, 2).toUpperCase() : '?';
+    av.style = val ? 'background:var(--accent);color:#0a0a0f;' : '';
+  }
+  updatePlayersCount();
+  refreshSuggestions();
+}
+
+function onPlayerBlur(id, input) {
+  // nothing needed — we read values at game start
+}
+
+function removePlayerRow(id) {
+  const row = document.getElementById(id);
+  if (row) row.remove();
+  playerRows = playerRows.filter(r => r.id !== id);
+  updatePlayersCount();
+  refreshSuggestions();
+}
+
+function getPlayerNames() {
+  const names = [];
+  document.querySelectorAll('#players-list .player-input').forEach(inp => {
+    const v = inp.value.trim();
+    if (v) names.push(v);
+  });
+  return names;
+}
+
+function updatePlayersCount() {
+  const n = getPlayerNames().length;
+  document.getElementById('players-count').textContent = n + ' joueur' + (n > 1 ? 's' : '');
+}
+
+function refreshSuggestions() {
+  const allSaved = dbGetAll();
+  const section = document.getElementById('suggestions-section');
+  if (!allSaved.length) { section.style.display = 'none'; return; }
+
+  section.style.display = '';
+  const chips = document.getElementById('suggestions-chips');
+  chips.innerHTML = '';
+  const currentNames = getPlayerNames().map(n => n.toLowerCase());
+
+  allSaved.forEach(p => {
+    const inGame = currentNames.includes(p.name.toLowerCase());
+    const chip = document.createElement('div');
+    chip.className = 'chip' + (inGame ? ' in-game' : '');
+    chip.innerHTML = (inGame ? '<div class="chip-dot"></div>' : '') + p.name;
+    if (!inGame) chip.onclick = () => addPlayerRow(p.name);
+    chips.appendChild(chip);
+  });
+}
+
+// ══════════════════════════════════════════════
+// START GAME
+// ══════════════════════════════════════════════
 function startGame() {
-  players = [];
-  for (let i = 1; i <= 6; i++) {
-    const v = document.getElementById('p'+i).value.trim() || `Joueur ${i}`;
-    players.push(v);
+  gamePlayers = getPlayerNames();
+
+  if (gamePlayers.length < 3) {
+    showToast('⚠️ Il faut au moins 3 joueurs !'); return;
+  }
+  if (cfg.uc + cfg.mw >= gamePlayers.length) {
+    showToast('⚠️ Trop d\'infiltrés pour ce nombre de joueurs !'); return;
+  }
+  if (cfg.uc + cfg.mw === 0) {
+    showToast('⚠️ Il faut au moins 1 Undercover ou Mr. White !'); return;
   }
 
-  if (cfg.uc + cfg.mw >= 6) {
-    alert('Trop d\'infiltrés pour 6 joueurs !'); return;
-  }
+  // Save players to DB
+  gamePlayers.forEach(name => dbAddPlayer(name));
 
-  // pick pair
+  // Pick word pair
   const pair = PAIRS[Math.floor(Math.random() * PAIRS.length)];
-  citizenWord = pair[0]; undercoverWord = pair[1];
+  citizenWord = pair[0];
+  undercoverWord = pair[1];
 
-  // shuffle players
-  const shuffled = [...players].sort(() => Math.random() - 0.5);
+  // Shuffle and assign roles
+  const shuffled = [...gamePlayers].sort(() => Math.random() - 0.5);
   roles = shuffled.map((name, i) => {
     let role = 'citoyen';
     if (i < cfg.uc) role = 'undercover';
     else if (i < cfg.uc + cfg.mw) role = 'mrwhite';
-    return { name, role, word: role === 'citoyen' ? citizenWord : role === 'undercover' ? undercoverWord : '???' };
+    const word = role === 'citoyen' ? citizenWord : role === 'undercover' ? undercoverWord : '';
+    return { name, role, word };
   });
 
   eliminated = [];
@@ -678,7 +1317,9 @@ function startGame() {
   showPass(0);
 }
 
-// ── REVEAL FLOW ──
+// ══════════════════════════════════════════════
+// REVEAL FLOW
+// ══════════════════════════════════════════════
 function showPass(idx) {
   currentReveal = idx;
   document.getElementById('pass-name').textContent = roles[idx].name;
@@ -697,15 +1338,19 @@ function revealRole() {
 
   if (r.role === 'mrwhite') {
     wordEl.textContent = '?';
-    wordEl.style.color = '#aaa';
-    hintEl.textContent = 'Tu n\'as pas de mot. Bluff !';
+    wordEl.style.color = '#888';
+    wordEl.style.textShadow = 'none';
+    hintEl.textContent = 'Tu n\'as pas de mot — bluff !';
   } else {
     wordEl.textContent = r.word.toUpperCase();
     wordEl.style.color = r.role === 'undercover' ? 'var(--red)' : 'var(--accent)';
-    hintEl.textContent = r.role === 'undercover' ? 'Tu es l\'infiltré' : 'Défends ton mot';
+    wordEl.style.textShadow = r.role === 'undercover'
+      ? '0 0 40px rgba(255,59,92,0.4)'
+      : '0 0 40px rgba(232,255,59,0.35)';
+    hintEl.textContent = r.role === 'undercover' ? 'Tu es l\'infiltré — bluff bien' : 'Défends ce mot discrètement';
   }
 
-  // progress dots
+  // Progress dots
   const dots = document.getElementById('progress-dots');
   dots.innerHTML = '';
   roles.forEach((_, i) => {
@@ -725,35 +1370,45 @@ function nextPlayer() {
   }
 }
 
-// ── ROUND / VOTE ──
+// ══════════════════════════════════════════════
+// ROUND / VOTE
+// ══════════════════════════════════════════════
 function startRound() {
   document.getElementById('round-label').textContent = `MANCHE ${round}`;
   selectedVote = null;
+
   const list = document.getElementById('vote-list');
   list.innerHTML = '';
   roles.forEach((r, i) => {
-    if (eliminated.includes(i)) return;
     const row = document.createElement('div');
-    row.className = 'vote-row';
-    row.id = 'vr-'+i;
-    row.innerHTML = `<span class="vote-name">${r.name}</span><div class="vote-dot"></div>`;
-    row.onclick = () => selectVote(i);
+    row.className = 'vote-row' + (eliminated.includes(i) ? ' eliminated' : '');
+    row.id = 'vr-' + i;
+
+    const initials = r.name.substring(0, 2).toUpperCase();
+    row.innerHTML = `
+      <div class="vote-info">
+        <div class="vote-avatar">${initials}</div>
+        <span class="vote-name">${r.name}</span>
+      </div>
+      <div class="vote-dot"></div>
+    `;
+    if (!eliminated.includes(i)) row.onclick = () => selectVote(i);
     list.appendChild(row);
   });
-  document.getElementById('vote-btn').disabled = true;
-  document.getElementById('vote-btn').style.opacity = '0.4';
+
+  const btn = document.getElementById('vote-btn');
+  btn.disabled = true;
   goto('s-round');
 }
 
 function selectVote(idx) {
   if (selectedVote !== null) {
-    const prev = document.getElementById('vr-'+selectedVote);
+    const prev = document.getElementById('vr-' + selectedVote);
     if (prev) prev.classList.remove('selected');
   }
   selectedVote = idx;
-  document.getElementById('vr-'+idx).classList.add('selected');
+  document.getElementById('vr-' + idx).classList.add('selected');
   document.getElementById('vote-btn').disabled = false;
-  document.getElementById('vote-btn').style.opacity = '1';
 }
 
 function confirmVote() {
@@ -761,8 +1416,9 @@ function confirmVote() {
   const r = roles[selectedVote];
   eliminated.push(selectedVote);
 
-  // show elim screen
-  document.getElementById('elim-icon').textContent = r.role === 'citoyen' ? '😵' : r.role === 'undercover' ? '🕵️' : '👻';
+  // Build elim screen — NO word reveal
+  const icons = { citoyen: '😵', undercover: '🕵️', mrwhite: '👻' };
+  document.getElementById('elim-icon').textContent = icons[r.role];
   document.getElementById('elim-name').textContent = r.name.toUpperCase();
 
   const eb = document.getElementById('elim-role-badge');
@@ -770,16 +1426,23 @@ function confirmVote() {
   const labels = { citoyen: 'CITOYEN', undercover: 'UNDERCOVER', mrwhite: 'MR. WHITE' };
   eb.textContent = labels[r.role];
 
-  document.getElementById('elim-word').textContent = r.role === 'mrwhite' ? 'N\'avait pas de mot' : `Son mot : ${r.word}`;
+  // ONLY show role, NOT word
+  const subs = {
+    citoyen: 'C\'était un citoyen… pas l\'infiltré.',
+    undercover: 'L\'infiltré est démasqué !',
+    mrwhite: 'Mr. White est éliminé !'
+  };
+  document.getElementById('elim-sub').textContent = subs[r.role];
 
   const mwSection = document.getElementById('mrwhite-guess-section');
+  const continueBtn = document.getElementById('elim-continue');
   mwSection.style.display = 'none';
-  document.getElementById('elim-continue').style.display = '';
+  continueBtn.style.display = '';
   document.getElementById('mw-guess').value = '';
 
   if (r.role === 'mrwhite') {
     mwSection.style.display = 'block';
-    document.getElementById('elim-continue').style.display = 'none';
+    continueBtn.style.display = 'none';
   }
 
   goto('s-elim');
@@ -794,7 +1457,7 @@ function judgeMrWhite() {
   } else {
     document.getElementById('mrwhite-guess-section').style.display = 'none';
     document.getElementById('elim-continue').style.display = '';
-    document.getElementById('elim-word').textContent = `Mauvaise réponse ! Le mot était : ${citizenWord}`;
+    document.getElementById('elim-sub').textContent = `Mauvaise réponse ! Le mot était : ${citizenWord}`;
     continueAfterElimCheck();
   }
 }
@@ -804,38 +1467,36 @@ function continueAfterElim() {
 }
 
 function continueAfterElimCheck() {
-  const check = checkWin();
-  if (check) { endGame(check); return; }
+  const result = checkWin();
+  if (result) { endGame(result); return; }
   round++;
   startRound();
 }
 
-// ── WIN CHECK ──
+// ══════════════════════════════════════════════
+// WIN CHECK
+// ══════════════════════════════════════════════
 function checkWin() {
   const alive = roles.map((r, i) => ({ ...r, i })).filter(r => !eliminated.includes(r.i));
   const aliveUC = alive.filter(r => r.role === 'undercover').length;
   const aliveMW = alive.filter(r => r.role === 'mrwhite').length;
   const aliveCit = alive.filter(r => r.role === 'citoyen').length;
 
-  const elimUC = roles.filter(r => r.role === 'undercover').every((_, idx) => {
-    const ri = roles.findIndex(x => x === _); // can't use this
-    return false;
-  });
-
-  // all undercovers + mrwhites eliminated
   if (aliveUC === 0 && aliveMW === 0) return 'citizens_win';
-  // infiltrators >= citizens
   if (aliveUC + aliveMW >= aliveCit) return 'undercover_win';
   return null;
 }
 
+// ══════════════════════════════════════════════
+// END GAME
+// ══════════════════════════════════════════════
 function endGame(type) {
   const icons = { citizens_win: '🏆', undercover_win: '🕵️', mrwhite_win: '👻' };
-  const titles = { citizens_win: 'CITOYENS\nGAGNENT', undercover_win: 'INFILTRÉS\nGAGNENT', mrwhite_win: 'MR. WHITE\nGAGNE' };
+  const titles = { citizens_win: 'CITOYENS\nGAGNENT !', undercover_win: 'INFILTRÉS\nGAGNENT !', mrwhite_win: 'MR. WHITE\nGAGNE !' };
   const subs = {
-    citizens_win: `Les infiltrés ont été démasqués !\nMot des citoyens : ${citizenWord}\nMot undercover : ${undercoverWord}`,
-    undercover_win: `Les infiltrés ont semé la confusion !\nMot des citoyens : ${citizenWord}\nMot undercover : ${undercoverWord}`,
-    mrwhite_win: `Mr. White a deviné le mot ! Génie du bluff.\nLe mot était : ${citizenWord}`
+    citizens_win: `Tous les infiltrés ont été démasqués !\n\nMot des citoyens : ${citizenWord}\nMot undercover : ${undercoverWord}`,
+    undercover_win: `Les infiltrés ont semé la confusion !\n\nMot des citoyens : ${citizenWord}\nMot undercover : ${undercoverWord}`,
+    mrwhite_win: `Génie du bluff — il a deviné le mot !\n\nLe mot était : ${citizenWord}`
   };
 
   document.getElementById('end-icon').textContent = icons[type];
@@ -844,25 +1505,86 @@ function endGame(type) {
 
   const rolesEl = document.getElementById('end-roles');
   rolesEl.innerHTML = '';
-  roles.forEach(r => {
+  roles.forEach((r, i) => {
     const row = document.createElement('div');
-    row.className = 'result-row';
+    row.className = 'result-row' + (eliminated.includes(i) ? ' elim-row' : '');
     const tagClass = { citoyen: 'tag-citoyen', undercover: 'tag-undercover', mrwhite: 'tag-mrwhite' };
-    const tagLabel = { citoyen: 'CITOYEN', undercover: 'UNDERCOVER', mrwhite: 'MR. WHITE' };
-    row.innerHTML = `<span>${r.name}</span><span class="result-role-tag ${tagClass[r.role]}">${tagLabel[r.role]}</span>`;
+    const tagLabel = { citoyen: 'Citoyen', undercover: 'Undercover', mrwhite: 'Mr. White' };
+    const initials = r.name.substring(0, 2).toUpperCase();
+    const elimBadge = eliminated.includes(i) ? ' <span style="font-size:10px;color:var(--muted);">éliminé</span>' : '';
+    row.innerHTML = `
+      <div class="result-row-left">
+        <div class="result-avatar">${initials}</div>
+        <span>${r.name}${elimBadge}</span>
+      </div>
+      <span class="result-role-tag ${tagClass[r.role]}">${tagLabel[r.role]}</span>
+    `;
     rolesEl.appendChild(row);
   });
 
   goto('s-end');
 }
 
-function resetGame() {
-  buildPlayerList();
+// ══════════════════════════════════════════════
+// REPLAY
+// ══════════════════════════════════════════════
+function replayGame() {
+  initConfig();
+  // Re-add same players
+  gamePlayers.forEach(name => addPlayerRow(name));
   goto('s-config');
 }
 
-// ── INIT ──
-buildPlayerList();
+// ══════════════════════════════════════════════
+// PLAYERS DB SCREEN
+// ══════════════════════════════════════════════
+function renderPlayersDB() {
+  const list = document.getElementById('db-list');
+  const all = dbGetAll();
+
+  if (!all.length) {
+    list.innerHTML = '<div style="padding:24px;text-align:center;color:var(--muted);font-size:13px;font-style:italic;">Aucun joueur enregistré</div>';
+    return;
+  }
+
+  list.innerHTML = '';
+  all.forEach(p => {
+    const row = document.createElement('div');
+    row.className = 'db-player-row';
+    const key = p.name.toLowerCase();
+    row.innerHTML = `
+      <div class="player-avatar" style="background:var(--accent);color:#0a0a0f;">${p.name.substring(0,2).toUpperCase()}</div>
+      <span class="db-player-name">${p.name}</span>
+      <span class="db-player-games">${p.games} partie${p.games > 1 ? 's' : ''}</span>
+      <button class="db-delete" onclick="deleteDBPlayer('${key}')">×</button>
+    `;
+    list.appendChild(row);
+  });
+}
+
+function deleteDBPlayer(key) {
+  dbDeletePlayer(key);
+  renderPlayersDB();
+  showToast('Joueur supprimé');
+}
+
+// Override goto to add screen-specific hooks
+const _goto = goto;
+function goto(id) {
+  _goto(id);
+  if (id === 's-config') { initConfig(); refreshSuggestions(); }
+  if (id === 's-players-db') { renderPlayersDB(); }
+}
+
+// ══════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════
+// Register Service Worker
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js').catch(() => {});
+  });
+}
 </script>
 </body>
 </html>
