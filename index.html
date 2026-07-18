@@ -437,6 +437,14 @@
     margin-bottom: 44px;
     letter-spacing: 1px;
     font-style: italic;
+    line-height: 1.8;
+  }
+  .role-hint .mw-cat {
+    color: var(--accent);
+    font-style: normal;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    font-size: 12px;
   }
 
   .progress-bar {
@@ -476,15 +484,27 @@
     background: var(--card);
     border: 1px solid var(--border);
     border-radius: 8px;
-    padding: 15px 16px;
+    padding: 12px 14px;
     cursor: pointer;
     transition: border-color 0.15s, background 0.15s;
     user-select: none;
+    gap: 8px;
   }
   .vote-row:active { background: var(--card2); }
   .vote-row.selected { border-color: var(--red); background: rgba(255,59,92,0.05); }
   .vote-row.eliminated { opacity: 0.25; pointer-events: none; }
-  .vote-info { display: flex; align-items: center; gap: 12px; }
+  .vote-info { display: flex; align-items: center; gap: 9px; flex: 1; min-width: 0; }
+  .vote-order-num {
+    width: 21px; height: 21px;
+    border-radius: 50%;
+    background: var(--card2);
+    border: 1px solid var(--border2);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--muted);
+    flex-shrink: 0;
+  }
   .vote-avatar {
     width: 32px; height: 32px;
     border-radius: 50%;
@@ -496,7 +516,22 @@
     text-transform: uppercase;
     flex-shrink: 0;
   }
-  .vote-name { font-size: 16px; font-weight: 500; }
+  .vote-name { font-size: 15px; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .eye-btn {
+    width: 27px; height: 27px;
+    border-radius: 50%;
+    border: 1px solid var(--border2);
+    background: transparent;
+    color: var(--muted);
+    font-size: 13px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    transition: border-color 0.15s, color 0.15s, transform 0.1s;
+    padding: 0;
+  }
+  .eye-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .eye-btn:active { transform: scale(0.88); }
   .vote-dot {
     width: 20px; height: 20px;
     border-radius: 50%;
@@ -505,6 +540,58 @@
     flex-shrink: 0;
   }
   .vote-row.selected .vote-dot { background: var(--red); border-color: var(--red); }
+
+  /* ── WORD PEEK OVERLAY ── */
+  .word-peek-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(5,5,10,0.82);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s;
+    padding: 24px;
+  }
+  .word-peek-overlay.show { opacity: 1; pointer-events: auto; }
+  .word-peek-card {
+    background: var(--card);
+    border: 1px solid var(--border2);
+    border-radius: 14px;
+    padding: 30px 26px;
+    width: 100%;
+    max-width: 300px;
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+  }
+  .peek-eye { font-size: 30px; margin-bottom: 10px; }
+  .peek-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 30px;
+    letter-spacing: 2px;
+    color: var(--text);
+    margin-bottom: 10px;
+  }
+  .peek-warn {
+    font-size: 12px;
+    color: var(--muted);
+    margin-bottom: 22px;
+    line-height: 1.6;
+  }
+  .peek-word {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 32px;
+    letter-spacing: 2px;
+    color: var(--accent);
+    margin-bottom: 20px;
+    word-break: break-word;
+    line-height: 1.2;
+  }
+  .word-peek-card .btn { margin-top: 6px; }
 
   /* ── ELIMINATED ── */
   .elim-icon { font-size: 80px; margin-bottom: 16px; }
@@ -707,8 +794,9 @@
 <div class="screen center" id="s-rules">
   <div class="section-title" style="align-self:center;margin-bottom:24px;">RÈGLES</div>
   <div class="rules-body">
-    <p>Chaque joueur reçoit un mot secret en privé. Les <strong style="color:var(--accent)">Citoyens</strong> ont le même mot. L'<strong style="color:var(--red)">Undercover</strong> a un mot proche mais différent. <strong style="color:#ccc">Mr. White</strong> ne reçoit rien du tout.</p>
-    <p>À tour de rôle, chaque joueur donne <strong>un seul indice</strong> sur son mot. Pas trop précis, pas trop vague. Puis tout le monde vote pour éliminer le suspect le plus louche.</p>
+    <p>Chaque joueur reçoit un mot secret en privé. Les <strong style="color:var(--accent)">Citoyens</strong> ont le même mot. L'<strong style="color:var(--red)">Undercover</strong> a un mot proche mais différent. <strong style="color:#ccc">Mr. White</strong> ne reçoit rien du tout, juste un vague indice de catégorie.</p>
+    <p>À tour de rôle, dans l'ordre affiché, chaque joueur donne <strong>un seul indice</strong> sur son mot. Pas trop précis, pas trop vague. Puis tout le monde vote pour éliminer le suspect le plus louche.</p>
+    <p>Un joueur oublié son mot ? Il peut appuyer sur l'icône 👁 à côté de son nom pour le revoir discrètement.</p>
     <p>Si <strong style="color:#ccc">Mr. White</strong> est éliminé, il a une chance de deviner le mot des citoyens pour renverser la partie.</p>
     <p><strong>Victoire Citoyens :</strong> Tous les infiltrés sont éliminés.<br>
     <strong>Victoire Infiltrés :</strong> Ils sont en minorité non détectée.<br>
@@ -790,9 +878,9 @@
 <!-- ── ROUND ── -->
 <div class="screen scrollable" id="s-round">
   <div class="round-info" id="round-label">MANCHE 1</div>
-  <div class="section-title">VOTE</div>
+  <div class="section-title">À VOUS</div>
   <div class="divider"></div>
-  <p style="font-size:13px;color:var(--muted);margin-bottom:22px;max-width:300px;line-height:1.6;">Chacun donne 1 indice, puis votez pour éliminer le plus suspect.</p>
+  <p style="font-size:13px;color:var(--muted);margin-bottom:22px;max-width:300px;line-height:1.6;">Ordre de passage ci-dessous — chacun donne 1 indice dans cet ordre, puis votez pour éliminer le plus suspect. Un doute sur ton mot ? Appuie sur 👁.</p>
   <div class="players-vote" id="vote-list"></div>
   <button class="btn btn-danger" id="vote-btn" onclick="confirmVote()" disabled>Éliminer ce joueur</button>
   <div style="height:24px;"></div>
@@ -825,6 +913,18 @@
   <div style="height:24px;"></div>
 </div>
 
+<!-- ── WORD PEEK OVERLAY ── -->
+<div class="word-peek-overlay" id="peek-overlay" onclick="closePeek(event)">
+  <div class="word-peek-card" onclick="event.stopPropagation()">
+    <div class="peek-eye">👁</div>
+    <div class="peek-name" id="peek-name">—</div>
+    <div class="peek-warn">Vérifie que personne d'autre ne regarde l'écran</div>
+    <button class="btn btn-primary btn-sm" id="peek-reveal-btn" onclick="doPeekReveal()" style="width:100%;">Afficher mon mot</button>
+    <div class="peek-word" id="peek-word" style="display:none;"></div>
+    <button class="btn btn-ghost btn-sm" onclick="closePeek()" style="width:100%;">Fermer</button>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
@@ -849,76 +949,134 @@ function getPlayerColor(index) {
 }
 
 // ══════════════════════════════════════════════════
-// WORD PAIRS DATABASE
+// WORD PAIRS DATABASE (avec catégorie pour l'indice Mr. White)
 // ══════════════════════════════════════════════════
 const PAIRS = [
-["Voiture","Tracteur"],["Vélo","Rollers"],["Avion","Hélicoptère"],["Bateau","Sous-marin"],["Train","Métro"],
-["Fusée","Satellite"],["Moto","Quad"],["Bus","Car"],["Ambulance","Taxi"],
+  // Transport
+  {cat:"Transport", w:["Voiture","Tracteur"]},{cat:"Transport", w:["Vélo","Rollers"]},{cat:"Transport", w:["Avion","Hélicoptère"]},
+  {cat:"Transport", w:["Bateau","Sous-marin"]},{cat:"Transport", w:["Train","Métro"]},{cat:"Transport", w:["Fusée","Satellite"]},
+  {cat:"Transport", w:["Moto","Quad"]},{cat:"Transport", w:["Bus","Car"]},{cat:"Transport", w:["Ambulance","Taxi"]},
 
-["Lion","Tigre"],["Chat","Tigre"],["Chien","Loup"],["Vache","Bison"],["Mouton","Lama"],
-["Cochon","Sanglier"],["Lapin","Lièvre"],["Grenouille","Crapaud"],["Requin","Dauphin"],["Aigle","Vautour"],
-["Perroquet","Corbeau"],["Canard","Oie"],["Poule","Dinde"],["Serpent","Anguille"],["Crabe","Araignée"],
-["Singe","Gorille"],["Cheval","Zèbre"],["Éléphant","Rhinocéros"],["Ours","Panda"],["Crocodile","Lézard"],
-["Moustique","Mouche"],["Abeille","Guêpe"],["Papillon","Libellule"],["Fourmi","Termite"],["Escargot","Limace"],
+  // Animaux
+  {cat:"Animaux", w:["Lion","Tigre"]},{cat:"Animaux", w:["Chat","Tigre"]},{cat:"Animaux", w:["Chien","Loup"]},
+  {cat:"Animaux", w:["Vache","Bison"]},{cat:"Animaux", w:["Mouton","Lama"]},{cat:"Animaux", w:["Cochon","Sanglier"]},
+  {cat:"Animaux", w:["Lapin","Lièvre"]},{cat:"Animaux", w:["Grenouille","Crapaud"]},{cat:"Animaux", w:["Requin","Dauphin"]},
+  {cat:"Animaux", w:["Aigle","Vautour"]},{cat:"Animaux", w:["Perroquet","Corbeau"]},{cat:"Animaux", w:["Canard","Oie"]},
+  {cat:"Animaux", w:["Poule","Dinde"]},{cat:"Animaux", w:["Serpent","Anguille"]},{cat:"Animaux", w:["Crabe","Araignée"]},
+  {cat:"Animaux", w:["Singe","Gorille"]},{cat:"Animaux", w:["Cheval","Zèbre"]},{cat:"Animaux", w:["Éléphant","Rhinocéros"]},
+  {cat:"Animaux", w:["Ours","Panda"]},{cat:"Animaux", w:["Crocodile","Lézard"]},{cat:"Animaux", w:["Moustique","Mouche"]},
+  {cat:"Animaux", w:["Abeille","Guêpe"]},{cat:"Animaux", w:["Papillon","Libellule"]},{cat:"Animaux", w:["Fourmi","Termite"]},
+  {cat:"Animaux", w:["Escargot","Limace"]},
 
-["Football","Rugby"],["Tennis","Badminton"],["Natation","Plongée"],["Boxe","Judo"],["Ski","Luge"],
-["Vélo","Triathlon"],["Golf","Pétanque"],["Bowling","Billard"],["Danse","Gym"],["Escalade","Randonnée"],
-["Patinage","Luge"],["Tir à l'arc","Fléchettes"],["Équitation","Rodéo"],["Karting","Formule 1"],
+  // Sport
+  {cat:"Sport", w:["Football","Rugby"]},{cat:"Sport", w:["Tennis","Badminton"]},{cat:"Sport", w:["Natation","Plongée"]},
+  {cat:"Sport", w:["Boxe","Judo"]},{cat:"Sport", w:["Ski","Luge"]},{cat:"Sport", w:["Vélo","Triathlon"]},
+  {cat:"Sport", w:["Golf","Pétanque"]},{cat:"Sport", w:["Bowling","Billard"]},{cat:"Sport", w:["Danse","Gym"]},
+  {cat:"Sport", w:["Escalade","Randonnée"]},{cat:"Sport", w:["Patinage","Luge"]},{cat:"Sport", w:["Tir à l'arc","Fléchettes"]},
+  {cat:"Sport", w:["Équitation","Rodéo"]},{cat:"Sport", w:["Karting","Formule 1"]},
 
-["Pizza","Quiche"],["Burger","Sandwich"],["Crêpe","Gaufre"],["Soupe","Bouillon"],["Pâtes","Riz"],
-["Poulet","Dinde"],["Jambon","Bacon"],["Saucisse","Merguez"],["Cabillaud","Saumon"],["Crevette","Crabe"],
-["Glace","Sorbet"],["Gâteau","Tarte"],["Biscuit","Cookie"],["Chocolat","Caramel"],["Sucette","Chewing-gum"],
-["Croissant","Brioche"],["Confiture","Miel"],["Beurre","Margarine"],["Fromage","Yaourt"],["Céréales","Granola"],
-["Pomme","Poire"],["Fraise","Framboise"],["Banane","Mangue"],["Orange","Clémentine"],["Citron","Pamplemousse"],
-["Ananas","Kiwi"],["Pastèque","Melon"],["Pêche","Abricot"],["Noix","Noisette"],["Figue","Datte"],
-["Carotte","Navet"],["Brocoli","Chou-fleur"],["Tomate","Poivron"],["Courgette","Concombre"],["Champignon","Truffe"],
-["Pomme de terre","Patate douce"],["Salade","Épinards"],["Oignon","Ail"],["Menthe","Basilic"],["Lentille","Pois chiche"],
+  // Nourriture
+  {cat:"Nourriture", w:["Pizza","Quiche"]},{cat:"Nourriture", w:["Burger","Sandwich"]},{cat:"Nourriture", w:["Crêpe","Gaufre"]},
+  {cat:"Nourriture", w:["Soupe","Bouillon"]},{cat:"Nourriture", w:["Pâtes","Riz"]},{cat:"Nourriture", w:["Poulet","Dinde"]},
+  {cat:"Nourriture", w:["Jambon","Bacon"]},{cat:"Nourriture", w:["Saucisse","Merguez"]},{cat:"Nourriture", w:["Cabillaud","Saumon"]},
+  {cat:"Nourriture", w:["Crevette","Crabe"]},{cat:"Nourriture", w:["Glace","Sorbet"]},{cat:"Nourriture", w:["Gâteau","Tarte"]},
+  {cat:"Nourriture", w:["Biscuit","Cookie"]},{cat:"Nourriture", w:["Chocolat","Caramel"]},{cat:"Nourriture", w:["Sucette","Chewing-gum"]},
+  {cat:"Nourriture", w:["Croissant","Brioche"]},{cat:"Nourriture", w:["Confiture","Miel"]},{cat:"Nourriture", w:["Beurre","Margarine"]},
+  {cat:"Nourriture", w:["Fromage","Yaourt"]},{cat:"Nourriture", w:["Céréales","Granola"]},
 
-["Guitare","Violon"],["Tambour","Djembé"],["Flûte","Trompette"],["Maracas","Castagnettes"],
+  // Fruits
+  {cat:"Fruits", w:["Pomme","Poire"]},{cat:"Fruits", w:["Fraise","Framboise"]},{cat:"Fruits", w:["Banane","Mangue"]},
+  {cat:"Fruits", w:["Orange","Clémentine"]},{cat:"Fruits", w:["Citron","Pamplemousse"]},{cat:"Fruits", w:["Ananas","Kiwi"]},
+  {cat:"Fruits", w:["Pastèque","Melon"]},{cat:"Fruits", w:["Pêche","Abricot"]},{cat:"Fruits", w:["Noix","Noisette"]},
+  {cat:"Fruits", w:["Figue","Datte"]},
 
-["Médecin","Infirmier"],["Pompier","Policier"],["Boulanger","Pâtissier"],["Coiffeur","Barbier"],["Jardinier","Fermier"],
-["Cuisinier","Serveur"],["Facteur","Livreur"],["Vétérinaire","Soigneur"],["Clown","Magicien"],["Acteur","Chanteur"],
-["Professeur","Directeur"],["Plombier","Électricien"],["Peintre","Sculpteur"],["Pilote","Capitaine"],["Astronaute","Cosmonaute"],
+  // Légumes
+  {cat:"Légumes", w:["Carotte","Navet"]},{cat:"Légumes", w:["Brocoli","Chou-fleur"]},{cat:"Légumes", w:["Tomate","Poivron"]},
+  {cat:"Légumes", w:["Courgette","Concombre"]},{cat:"Légumes", w:["Champignon","Truffe"]},{cat:"Légumes", w:["Pomme de terre","Patate douce"]},
+  {cat:"Légumes", w:["Salade","Épinards"]},{cat:"Légumes", w:["Oignon","Ail"]},{cat:"Légumes", w:["Menthe","Basilic"]},
+  {cat:"Légumes", w:["Lentille","Pois chiche"]},
 
-["Maison","Chalet"],["Appartement","Studio"],["Château","Manoir"],["Cabane","Tipi"],["Igloo","Tente"],
-["Grange","Étable"],["Phare","Tour"],["Moulin","Usine"],["Église","Mosquée"],["Stade","Gymnase"],
+  // Musique
+  {cat:"Musique", w:["Guitare","Violon"]},{cat:"Musique", w:["Tambour","Djembé"]},{cat:"Musique", w:["Flûte","Trompette"]},
+  {cat:"Musique", w:["Maracas","Castagnettes"]},
 
-["Lit","Hamac"],["Canapé","Fauteuil"],["Table","Bureau"],["Chaise","Tabouret"],["Armoire","Commode"],
-["Lampe","Lustre"],["Miroir","Tableau"],["Tapis","Moquette"],["Rideau","Store"],["Coussin","Oreiller"],
+  // Métiers
+  {cat:"Métiers", w:["Médecin","Infirmier"]},{cat:"Métiers", w:["Pompier","Policier"]},{cat:"Métiers", w:["Boulanger","Pâtissier"]},
+  {cat:"Métiers", w:["Coiffeur","Barbier"]},{cat:"Métiers", w:["Jardinier","Fermier"]},{cat:"Métiers", w:["Cuisinier","Serveur"]},
+  {cat:"Métiers", w:["Facteur","Livreur"]},{cat:"Métiers", w:["Vétérinaire","Soigneur"]},{cat:"Métiers", w:["Clown","Magicien"]},
+  {cat:"Métiers", w:["Acteur","Chanteur"]},{cat:"Métiers", w:["Professeur","Directeur"]},{cat:"Métiers", w:["Plombier","Électricien"]},
+  {cat:"Métiers", w:["Peintre","Sculpteur"]},{cat:"Métiers", w:["Pilote","Capitaine"]},{cat:"Métiers", w:["Astronaute","Cosmonaute"]},
 
-["Pull","Gilet"],["Jean","Jogging"],["Robe","Jupe"],["Manteau","Doudoune"],["Écharpe","Foulard"],
-["Bonnet","Casquette"],["Gants","Moufles"],["Baskets","Sandales"],["Bottes","Bottines"],["Pyjama","Nuisette"],
-["Maillot de bain","Bikini"],["Tablier","Blouse"],["Salopette","Combinaison"],["Imperméable","Ciré"],["Chapeau","Bob"],
+  // Habitations
+  {cat:"Habitations", w:["Maison","Chalet"]},{cat:"Habitations", w:["Appartement","Studio"]},{cat:"Habitations", w:["Château","Manoir"]},
+  {cat:"Habitations", w:["Cabane","Tipi"]},{cat:"Habitations", w:["Igloo","Tente"]},{cat:"Habitations", w:["Grange","Étable"]},
+  {cat:"Habitations", w:["Phare","Tour"]},{cat:"Habitations", w:["Moulin","Usine"]},{cat:"Habitations", w:["Église","Mosquée"]},
+  {cat:"Habitations", w:["Stade","Gymnase"]},
 
-["Soleil","Lune"],["Pluie","Neige"],["Orage","Tempête"],["Arc-en-ciel","Aurore boréale"],["Brouillard","Brume"],
-["Grêle","Verglas"],["Canicule","Sécheresse"],["Tornade","Cyclone"],["Avalanche","Pluie"],
+  // Mobilier
+  {cat:"Mobilier", w:["Lit","Hamac"]},{cat:"Mobilier", w:["Canapé","Fauteuil"]},{cat:"Mobilier", w:["Table","Bureau"]},
+  {cat:"Mobilier", w:["Chaise","Tabouret"]},{cat:"Mobilier", w:["Armoire","Commode"]},{cat:"Mobilier", w:["Lampe","Lustre"]},
+  {cat:"Mobilier", w:["Miroir","Tableau"]},{cat:"Mobilier", w:["Tapis","Moquette"]},{cat:"Mobilier", w:["Rideau","Store"]},
+  {cat:"Mobilier", w:["Coussin","Oreiller"]},
 
-["Plage","Piscine"],["Montagne","Colline"],["Forêt","Bois"],["Rivière","Fleuve"],["Lac","Étang"],
-["Cascade","Fontaine"],["Volcan","Geyser"],["Glacier","Banquise"],
-["Falaise","Ravin"],["Grotte","Caverne"],["Prairie","Champ"],["Jardin","Parc"],
+  // Vêtements
+  {cat:"Vêtements", w:["Pull","Gilet"]},{cat:"Vêtements", w:["Jean","Jogging"]},{cat:"Vêtements", w:["Robe","Jupe"]},
+  {cat:"Vêtements", w:["Manteau","Doudoune"]},{cat:"Vêtements", w:["Écharpe","Foulard"]},{cat:"Vêtements", w:["Bonnet","Casquette"]},
+  {cat:"Vêtements", w:["Gants","Moufles"]},{cat:"Vêtements", w:["Baskets","Sandales"]},{cat:"Vêtements", w:["Bottes","Bottines"]},
+  {cat:"Vêtements", w:["Pyjama","Nuisette"]},{cat:"Vêtements", w:["Maillot de bain","Bikini"]},{cat:"Vêtements", w:["Tablier","Blouse"]},
+  {cat:"Vêtements", w:["Salopette","Combinaison"]},{cat:"Vêtements", w:["Imperméable","Ciré"]},{cat:"Vêtements", w:["Chapeau","Bob"]},
 
-["Brosse à dents","Fil dentaire"],["Savon","Gel douche"],["Shampooing","Après-shampooing"],["Serviette","Peignoir"],["Déodorant","Parfum"],
-["Pansement","Sparadrap"],["Médicament","Sirop"],["Thermomètre","Tensiomètre"],["Rhume","Grippe"],["Toux","Éternuement"],
+  // Météo
+  {cat:"Météo", w:["Soleil","Lune"]},{cat:"Météo", w:["Pluie","Neige"]},{cat:"Météo", w:["Orage","Tempête"]},
+  {cat:"Météo", w:["Arc-en-ciel","Aurore boréale"]},{cat:"Météo", w:["Brouillard","Brume"]},{cat:"Météo", w:["Grêle","Verglas"]},
+  {cat:"Météo", w:["Canicule","Sécheresse"]},{cat:"Météo", w:["Tornade","Cyclone"]},{cat:"Météo", w:["Avalanche","Pluie"]},
 
-["Noël","Anniversaire"],["Halloween","Carnaval"],["Pâques","Épiphanie"],["Fête foraine","Cirque"],["Kermesse","Foire"],
-["Feu d'artifice","Pétard"],["Défilé","Parade"],["Déguisement","Masque"],["Cadeau","Surprise"],["Confetti","Serpentin"],
+  // Nature
+  {cat:"Nature", w:["Plage","Piscine"]},{cat:"Nature", w:["Montagne","Colline"]},{cat:"Nature", w:["Forêt","Bois"]},
+  {cat:"Nature", w:["Rivière","Fleuve"]},{cat:"Nature", w:["Lac","Étang"]},{cat:"Nature", w:["Cascade","Fontaine"]},
+  {cat:"Nature", w:["Volcan","Geyser"]},{cat:"Nature", w:["Glacier","Banquise"]},{cat:"Nature", w:["Falaise","Ravin"]},
+  {cat:"Nature", w:["Grotte","Caverne"]},{cat:"Nature", w:["Prairie","Champ"]},{cat:"Nature", w:["Jardin","Parc"]},
 
-["École","Crèche"],["Bibliothèque","Médiathèque"],["Hôpital","Clinique"],["Pharmacie","Parapharmacie"],["Boulangerie","Pâtisserie"],
-["Marché","Supermarché"],["Zoo","Aquarium"],["Musée","Galerie"],["Cinéma","Théâtre"],["Stade","Patinoire"],
+  // Hygiène & santé
+  {cat:"Hygiène & santé", w:["Brosse à dents","Fil dentaire"]},{cat:"Hygiène & santé", w:["Savon","Gel douche"]},
+  {cat:"Hygiène & santé", w:["Shampooing","Après-shampooing"]},{cat:"Hygiène & santé", w:["Serviette","Peignoir"]},
+  {cat:"Hygiène & santé", w:["Déodorant","Parfum"]},{cat:"Hygiène & santé", w:["Pansement","Sparadrap"]},
+  {cat:"Hygiène & santé", w:["Médicament","Sirop"]},{cat:"Hygiène & santé", w:["Thermomètre","Tensiomètre"]},
+  {cat:"Hygiène & santé", w:["Rhume","Grippe"]},{cat:"Hygiène & santé", w:["Toux","Éternuement"]},
 
-["Joie","Bonheur"],["Peur","Frousse"],["Colère","Rage"],["Tristesse","Chagrin"],["Honte","Gêne"],
-["Jalousie","Envie"],["Espoir","Rêve"],["Fierté","Satisfaction"],["Curiosité","Intérêt"],["Amour","Amitié"],
+  // Fêtes
+  {cat:"Fêtes", w:["Noël","Anniversaire"]},{cat:"Fêtes", w:["Halloween","Carnaval"]},{cat:"Fêtes", w:["Pâques","Épiphanie"]},
+  {cat:"Fêtes", w:["Fête foraine","Cirque"]},{cat:"Fêtes", w:["Kermesse","Foire"]},{cat:"Fêtes", w:["Feu d'artifice","Pétard"]},
+  {cat:"Fêtes", w:["Défilé","Parade"]},{cat:"Fêtes", w:["Déguisement","Masque"]},{cat:"Fêtes", w:["Cadeau","Surprise"]},
+  {cat:"Fêtes", w:["Confetti","Serpentin"]},
 
-["Crayon","Feutre"],["Aquarelle","Gouache"],["Pinceau","Rouleau"],["Colle","Scotch"],["Ciseaux","Cutter"],
-["Puzzle","Domino"],["Bille","Toupie"],["Yoyo","Diabolo"],["Ballon","Balle"],["Cerf-volant","Frisbee"],
-["Poupée","Peluche"],["Lego","Playmobil"],["Toboggan","Balançoire"],["Trampoline","Tapis"],["Marionnette","Figurine"],
+  // Lieux publics
+  {cat:"Lieux publics", w:["École","Crèche"]},{cat:"Lieux publics", w:["Bibliothèque","Médiathèque"]},{cat:"Lieux publics", w:["Hôpital","Clinique"]},
+  {cat:"Lieux publics", w:["Pharmacie","Parapharmacie"]},{cat:"Lieux publics", w:["Boulangerie","Pâtisserie"]},{cat:"Lieux publics", w:["Marché","Supermarché"]},
+  {cat:"Lieux publics", w:["Zoo","Aquarium"]},{cat:"Lieux publics", w:["Musée","Galerie"]},{cat:"Lieux publics", w:["Cinéma","Théâtre"]},
+  {cat:"Lieux publics", w:["Stade","Patinoire"]},
 
-["Ami","Copain"],["Cousin","Camarade"],["Voisin","Collègue"],["Jumeau","Triplé"],
-["Maman","Papa"],["Tonton","Parrain"],["Frère","Cousin"],["Sœur","Cousine"],
+  // Émotions
+  {cat:"Émotions", w:["Joie","Bonheur"]},{cat:"Émotions", w:["Peur","Frousse"]},{cat:"Émotions", w:["Colère","Rage"]},
+  {cat:"Émotions", w:["Tristesse","Chagrin"]},{cat:"Émotions", w:["Honte","Gêne"]},{cat:"Émotions", w:["Jalousie","Envie"]},
+  {cat:"Émotions", w:["Espoir","Rêve"]},{cat:"Émotions", w:["Fierté","Satisfaction"]},{cat:"Émotions", w:["Curiosité","Intérêt"]},
+  {cat:"Émotions", w:["Amour","Amitié"]},
 
- ];
+  // Jouets
+  {cat:"Jouets", w:["Crayon","Feutre"]},{cat:"Jouets", w:["Aquarelle","Gouache"]},{cat:"Jouets", w:["Pinceau","Rouleau"]},
+  {cat:"Jouets", w:["Colle","Scotch"]},{cat:"Jouets", w:["Ciseaux","Cutter"]},{cat:"Jouets", w:["Puzzle","Domino"]},
+  {cat:"Jouets", w:["Bille","Toupie"]},{cat:"Jouets", w:["Yoyo","Diabolo"]},{cat:"Jouets", w:["Ballon","Balle"]},
+  {cat:"Jouets", w:["Cerf-volant","Frisbee"]},{cat:"Jouets", w:["Poupée","Peluche"]},{cat:"Jouets", w:["Lego","Playmobil"]},
+  {cat:"Jouets", w:["Toboggan","Balançoire"]},{cat:"Jouets", w:["Trampoline","Tapis"]},{cat:"Jouets", w:["Marionnette","Figurine"]},
+
+  // Famille & amis
+  {cat:"Famille & amis", w:["Ami","Copain"]},{cat:"Famille & amis", w:["Cousin","Camarade"]},{cat:"Famille & amis", w:["Voisin","Collègue"]},
+  {cat:"Famille & amis", w:["Jumeau","Triplé"]},{cat:"Famille & amis", w:["Maman","Papa"]},{cat:"Famille & amis", w:["Tonton","Parrain"]},
+  {cat:"Famille & amis", w:["Frère","Cousin"]},{cat:"Famille & amis", w:["Sœur","Cousine"]},
+];
+
 // ══════════════════════════════════════════════════
-// PLAYERS DATABASE (localStorage)
+// PLAYERS DATABASE (localStorage) — historique par rôle
 // ══════════════════════════════════════════════════
 const DB_KEY = 'undercover_players_v2';
 
@@ -931,12 +1089,14 @@ function dbSave(data) {
   try { localStorage.setItem(DB_KEY, JSON.stringify(data)); } catch {}
 }
 
-function dbAddPlayer(name) {
+// role: 'citoyen' | 'undercover' | 'mrwhite' — sert à équilibrer les tirages futurs
+function dbAddPlayer(name, role) {
   if (!name.trim()) return;
   const db = dbLoad();
   const key = name.trim().toLowerCase();
-  if (!db[key]) db[key] = { name: name.trim(), games: 0, added: Date.now() };
+  if (!db[key]) db[key] = { name: name.trim(), games: 0, citoyen: 0, undercover: 0, mrwhite: 0, added: Date.now() };
   db[key].games = (db[key].games || 0) + 1;
+  if (role) db[key][role] = (db[key][role] || 0) + 1;
   dbSave(db);
 }
 
@@ -951,6 +1111,37 @@ function dbDeletePlayer(key) {
   dbSave(db);
 }
 
+// Poids d'un joueur pour être tiré infiltré : plus il l'a été souvent
+// par le passé (relativement à ses parties jouées), moins il a de chances
+// d'être re-tiré cette fois-ci — ça évite que ce soit toujours les mêmes.
+function getPlayerWeight(name) {
+  const db = dbLoad();
+  const key = name.trim().toLowerCase();
+  const p = db[key];
+  if (!p || !p.games) return 1;
+  const infiltratorCount = (p.undercover || 0) + (p.mrwhite || 0);
+  const rate = infiltratorCount / p.games;
+  return Math.max(0.15, 1 - rate);
+}
+
+// Tirage pondéré sans remise
+function weightedSampleWithoutReplacement(items, weights, k) {
+  const pool = items.map((it, i) => ({ it, w: weights[i] }));
+  const picked = [];
+  for (let n = 0; n < k && pool.length; n++) {
+    const total = pool.reduce((s, p) => s + p.w, 0);
+    let r = Math.random() * total;
+    let idx = 0;
+    for (; idx < pool.length - 1; idx++) {
+      r -= pool[idx].w;
+      if (r <= 0) break;
+    }
+    picked.push(pool[idx].it);
+    pool.splice(idx, 1);
+  }
+  return picked;
+}
+
 // ══════════════════════════════════════════════════
 // GAME STATE
 // ══════════════════════════════════════════════════
@@ -963,6 +1154,9 @@ let round = 1;
 let selectedVote = null;
 let citizenWord = '';
 let undercoverWord = '';
+let currentCategory = '';
+let turnOrder = []; // ordre de passage (indices dans "roles"), le 1er n'est jamais un infiltré
+let peekIndex = null;
 
 // ══════════════════════════════════════════════════
 // NAVIGATION — single clean function, no recursion
@@ -1157,28 +1351,66 @@ function startGame() {
   if (cfg.uc + cfg.mw >= gamePlayers.length) { showToast('⚠️ Trop d\'infiltrés pour ce nombre de joueurs !'); return; }
   if (cfg.uc + cfg.mw === 0) { showToast('⚠️ Il faut au moins 1 Undercover ou Mr. White !'); return; }
 
-  gamePlayers.forEach(name => dbAddPlayer(name));
-
   const pair = PAIRS[Math.floor(Math.random() * PAIRS.length)];
-  citizenWord = pair[0];
-  undercoverWord = pair[1];
+  citizenWord = pair.w[0];
+  undercoverWord = pair.w[1];
+  currentCategory = pair.cat;
 
-const rolesList = [];
-for (let i = 0; i < cfg.uc; i++) rolesList.push('undercover');
-for (let i = 0; i < cfg.mw; i++) rolesList.push('mrwhite');
-while (rolesList.length < gamePlayers.length) rolesList.push('citoyen');
-rolesList.sort(() => Math.random() - 0.5);
+  // ── Répartition des rôles pondérée par l'historique ──
+  // Les joueurs qui ont été moins souvent infiltrés par le passé ont
+  // plus de chances de l'être cette fois-ci, pour varier les parties.
+  const infiltratorNeeded = cfg.uc + cfg.mw;
+  const weights = gamePlayers.map(getPlayerWeight);
+  const infiltrators = weightedSampleWithoutReplacement(gamePlayers, weights, infiltratorNeeded);
+  const shuffledInf = infiltrators.sort(() => Math.random() - 0.5);
+  const ucNames = shuffledInf.slice(0, cfg.uc);
+  const mwNames = shuffledInf.slice(cfg.uc, cfg.uc + cfg.mw);
 
-roles = gamePlayers.map((name, i) => {
-  const role = rolesList[i];
-  const word = role === 'citoyen' ? citizenWord : role === 'undercover' ? undercoverWord : '';
-  return { name, role, word };
-});
+  roles = gamePlayers.map(name => {
+    let role = 'citoyen';
+    if (ucNames.includes(name)) role = 'undercover';
+    else if (mwNames.includes(name)) role = 'mrwhite';
+    const word = role === 'citoyen' ? citizenWord : role === 'undercover' ? undercoverWord : '';
+    return { name, role, word };
+  });
+
+  // Historique mis à jour après la répartition
+  roles.forEach(r => dbAddPlayer(r.name, r.role));
+
+  // Ordre de passage aléatoire — jamais un infiltré en premier
+  turnOrder = generateTurnOrder();
 
   eliminated = [];
   round = 1;
   currentReveal = 0;
   showPass(0);
+}
+
+// Génère un ordre aléatoire de tous les joueurs, garanti démarrer par un citoyen
+function generateTurnOrder() {
+  const idxs = roles.map((_, i) => i);
+  for (let i = idxs.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [idxs[i], idxs[j]] = [idxs[j], idxs[i]];
+  }
+  const firstCitizenPos = idxs.findIndex(i => roles[i].role === 'citoyen');
+  if (firstCitizenPos > 0) {
+    [idxs[0], idxs[firstCitizenPos]] = [idxs[firstCitizenPos], idxs[0]];
+  }
+  return idxs;
+}
+
+// Ordre pour la manche en cours : on retire les éliminés, et on s'assure
+// à nouveau qu'un infiltré ne démarre jamais la manche
+function getRoundOrder() {
+  let order = turnOrder.filter(i => !eliminated.includes(i));
+  if (order.length && roles[order[0]].role !== 'citoyen') {
+    const citPos = order.findIndex(i => roles[i].role === 'citoyen');
+    if (citPos > 0) {
+      [order[0], order[citPos]] = [order[citPos], order[0]];
+    }
+  }
+  return order;
 }
 
 // ══════════════════════════════════════════════════
@@ -1204,14 +1436,14 @@ function revealRole() {
     wordEl.textContent = '?';
     wordEl.style.color = '#888';
     wordEl.style.textShadow = 'none';
-    hintEl.textContent = 'Tu n\'as pas de mot — bluff !';
+    hintEl.innerHTML = 'Tu n\'as pas de mot — bluff !<br><span class="mw-cat">Indice léger : ' + escapeHtml(currentCategory) + '</span>';
   } else {
     wordEl.textContent = r.word.toUpperCase();
     wordEl.style.color = r.role === 'undercover' ? 'var(--red)' : 'var(--accent)';
     wordEl.style.textShadow = r.role === 'undercover'
       ? '0 0 40px rgba(255,59,92,0.4)'
       : '0 0 40px rgba(232,255,59,0.35)';
-    hintEl.textContent = r.role === 'undercover' ? 'Tu es l\'infiltré — bluff bien' : 'Défends ce mot discrètement';
+    hintEl.innerHTML = r.role === 'undercover' ? 'Tu es l\'infiltré — bluff bien' : 'Défends ce mot discrètement';
   }
 
   const dots = document.getElementById('progress-dots');
@@ -1234,27 +1466,31 @@ function nextPlayer() {
 }
 
 // ══════════════════════════════════════════════════
-// ROUND / VOTE
+// ROUND / VOTE (ordre de passage + vote regroupés)
 // ══════════════════════════════════════════════════
 function startRound() {
   document.getElementById('round-label').textContent = `MANCHE ${round}`;
   selectedVote = null;
 
+  const order = getRoundOrder();
   const list = document.getElementById('vote-list');
   list.innerHTML = '';
-  roles.forEach((r, i) => {
+  order.forEach((i, pos) => {
+    const r = roles[i];
     const row = document.createElement('div');
-    row.className = 'vote-row' + (eliminated.includes(i) ? ' eliminated' : '');
+    row.className = 'vote-row';
     row.id = 'vr-' + i;
     const initials = r.name.substring(0, 2).toUpperCase();
     row.innerHTML = `
       <div class="vote-info">
+        <div class="vote-order-num">${pos + 1}</div>
         <div class="vote-avatar">${initials}</div>
         <span class="vote-name">${escapeHtml(r.name)}</span>
+        <button class="eye-btn" title="Voir mon mot" onclick="event.stopPropagation(); openPeek(${i})">👁</button>
       </div>
       <div class="vote-dot"></div>
     `;
-    if (!eliminated.includes(i)) row.onclick = () => selectVote(i);
+    row.addEventListener('click', () => selectVote(i));
     list.appendChild(row);
   });
 
@@ -1270,6 +1506,37 @@ function selectVote(idx) {
   selectedVote = idx;
   document.getElementById('vr-' + idx).classList.add('selected');
   document.getElementById('vote-btn').disabled = false;
+}
+
+// ══════════════════════════════════════════════════
+// VOIR SON MOT (œil) — nécessite une confirmation avant affichage
+// ══════════════════════════════════════════════════
+function openPeek(idx) {
+  peekIndex = idx;
+  document.getElementById('peek-name').textContent = roles[idx].name;
+  document.getElementById('peek-reveal-btn').style.display = '';
+  const wordEl = document.getElementById('peek-word');
+  wordEl.style.display = 'none';
+  wordEl.textContent = '';
+  document.getElementById('peek-overlay').classList.add('show');
+}
+
+function doPeekReveal() {
+  if (peekIndex === null) return;
+  const r = roles[peekIndex];
+  const wordEl = document.getElementById('peek-word');
+  if (r.role === 'mrwhite') {
+    wordEl.textContent = 'Pas de mot — Indice : ' + currentCategory;
+  } else {
+    wordEl.textContent = r.word.toUpperCase();
+  }
+  wordEl.style.display = 'block';
+  document.getElementById('peek-reveal-btn').style.display = 'none';
+}
+
+function closePeek(e) {
+  document.getElementById('peek-overlay').classList.remove('show');
+  peekIndex = null;
 }
 
 function confirmVote() {
@@ -1408,7 +1675,6 @@ function renderPlayersDB() {
     const pc = getPlayerColor(i);
     const row = document.createElement('div');
     row.className = 'db-player-row';
-    const key = p.name.toLowerCase().replace(/'/g, "\\'");
     row.innerHTML = `
       <div class="player-avatar has-color" style="background:${pc.color};color:${pc.text};">${p.name.substring(0,2).toUpperCase()}</div>
       <span class="db-player-name">${escapeHtml(p.name)}</span>
